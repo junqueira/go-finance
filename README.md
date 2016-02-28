@@ -1,4 +1,4 @@
-# go-finance
+# go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance)
 
 `go-finance` is a no-nonsense library for accessing the Yahoo! Finance API.
 
