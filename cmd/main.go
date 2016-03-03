@@ -1,25 +1,21 @@
 package main
 
 import (
-	"time"
+	"fmt"
 
 	"github.com/FlashBoys/go-finance"
 )
 
 func main() {
 
-	// A client for go-finance.
-
+	// Init a client.
 	c, err := finance.NewClient()
 	if err != nil {
 		panic(err)
 	}
-	end := time.Now()
-	start := end.AddDate(0, -1, 0)
 
-	_, err = c.GetQuoteHistory("YHOO", start, end)
-	if err != nil {
-		panic(err)
-	}
+	// Request history for TWTR.
+	s := c.GetQuote("TWTR")
+	fmt.Println(s)
 
 }

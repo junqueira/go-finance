@@ -15,7 +15,7 @@ go get gopkg.in/go-finance.v1
 
 
 
-Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of financial data endpoints in varying degrees of deprecation, conflation/realtime, exchange availability, protocol access, and overall lack of consistent usage guidelines/documentation, I advise users of this library to be aware that you should not depend on it returning data to you 100% of the time. Build fail-safes and back-up plans into your own systems tasked with handling these cases as they arise. You should also probably complain to Yahoo to build better financial engineering tools since so many of us depend on them.
+Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of financial data YQL tables in varying degrees of deprecation, conflation/realtime, exchange availability, protocol access, and overall lack of consistent usage guidelines/documentation, I advise users of this library to be aware that you should not depend on it returning data to you 100% of the time. Build fail-safes and back-up plans into your own systems tasked with handling these cases as they arise. You should also probably complain to Yahoo to build better financial engineering tools since so many of us depend on them.
 
 While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community, those concepts are not the focus of this project. A good place to start there would be [Gota](https://github.com/kniren/gota). In the future, tabular data will be the focus! I just have to determine the easiest way to integrate it in my current projects. Anyways!- The primary technical tenants of this project are:
 
@@ -25,14 +25,41 @@ While dataframes (tabular data structures used for analytical operations atypica
 
 ## Status
 
-  [ ] Single stock quotes
-  [ ] Multiple stock quotes
-  [ ] Single stock quote history
-  [ ] Option chains
-  [ ] Currency pairs quotes
+- [ ] Single stock quotes
+- [ ] Multiple stock quotes
+- [x] Single stock quote history
+- [ ] Option chains
+- [ ] Currency pairs quotes
 
 ## Features
 
-```go
+### Historical
 
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+	// Init a client.
+	c, err := finance.NewClient()
+	if err != nil {
+		panic(err)
+	}
+
+	// Set time bounds to 1 month starting Jan. 1.
+	start, _ := time.Parse(time.RFC3339, "2016-01-01T16:00:00+00:00")
+	end := start.AddDate(0, 1, 0)
+
+	// Request history for TWTR.
+	bars := c.GetQuoteHistory("TWTR", start, end)
+	fmt.Println(bars)
+
+}
 ```
