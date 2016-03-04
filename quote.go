@@ -6,34 +6,40 @@ import (
 	"github.com/FlashBoys/go-finance/models"
 )
 
-// GetQuote fetches a single security's quote from Yahoo Finance.
-func (c *Client) GetQuote(symbol string) (s models.Security) {
+const quoteURL = "http://download.finance.yahoo.com/d/quotes.csv"
 
-	// Query YQL for a list of historical prices given input paramaters.
-	results, err := c.DB.Query(
-		"select * from yahoo.finance.quotes where symbol in (\"AAPL\")")
-	if err != nil {
-		fmt.Println("Error querying quote: ", err)
-		return
+// GetQuote fetches a single symbol's quote from Yahoo Finance.
+func GetQuote(symbol string) models.Quote {
+
+	params := map[string]string{
+		"s": symbol,
+		"f": "saa2bb4c1c4ghjkj1l1m3m4nopp2d1t1vxydee7e8e9j4p5p6qrr1r5r6r7s7t8",
+		"e": ".csv",
 	}
-	fmt.Println(results)
-	//
-	// // Serialize results into slice of bars.
-	// for results.Next() {
-	//
-	// 	var data map[string]interface{}
-	// 	err = results.Scan(&data)
-	// 	if err != nil {
-	// 		fmt.Println("Error serializing bar: ", err)
-	// 		continue
-	// 	}
-	//
-	// }
 
-	return s
+	table, err := requestCSV(buildURL(quoteURL, params))
+	if err != nil {
+		fmt.Println("Error fetching quote: ", err)
+		return models.Quote{}
+	}
+
+	return generateQuotes(table)[0]
 }
 
-// GetQuotes fetches multiples security's quotes from Yahoo Finance.
-func (c *Client) GetQuotes(symbols []string) {
+// GetQuotes fetches multiple symbol's quotes from Yahoo Finance.
+func GetQuotes(symbols []string) []models.Quote {
+
+	return []models.Quote{}
+}
+
+func generateQuotes(table [][]string) []models.Quote {
+
+	quotes := []models.Quote{}
+
+	for _, row := range table {
+		quotes = append(quotes, models.NewQuote(row))
+	}
+
+	return quotes
 
 }
