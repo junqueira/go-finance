@@ -58,7 +58,7 @@ import (
 func main() {
 
   // 15-min delayed full quote for Apple.
-	q := finance.GetQuotes("AAPL")
+	q := finance.GetQuote("AAPL")
 	fmt.Println(q)
 
 }
