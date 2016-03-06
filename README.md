@@ -1,17 +1,17 @@
 # go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance)
 
-`go-finance` is a no-nonsense library for accessing the Yahoo! Finance API. It is also not done yet.
+`go-finance` is a no-nonsense library for accessing the Yahoo! Finance API. It's not completely done yet - check Status section.
 
 To install go-finance, use the following command:
 
 ```
-go get gopkg.in/go-finance.v1
+go get github.com/FlashBoys/go-finance
 ```
 
-`go-finance` aims to provide a clean, flexible, and thorough implementation of the full suite of Yahoo! Finance APIs. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints. I've taken leaves out of the books of the following projects, chosen for their stability, wide-spread usage, completeness and accuracy of the financial data we all know to be available, as well as how much I like using them in other projects given their own concise syntax inherent in their design.
+`go-finance` aims to provide a clean, flexible, and thorough implementation of the full suite of Yahoo! Finance APIs. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints. I've taken leaves out of the books of the following projects, chosen for their stability, wide-spread usage, completeness and accuracy of the financial data we all know to be available, as well as how much I like using them in other projects given their own concise syntax inherent in their design:
 
-  * [pandas datareader](https://github.com/pydata/pandas-datareader) (Python)
-  * [yahoofinance-api](https://github.com/sstrickx/yahoofinance-api) (Java)
+  * [pandas datareader](https://github.com/pydata/pandas-datareader) (Python) wide-spread use in academia.
+  * [yahoofinance-api](https://github.com/sstrickx/yahoofinance-api) (Java) most popular java library for this purpose.
 
 
 
@@ -25,15 +25,25 @@ While dataframes (tabular data structures used for analytical operations atypica
 
 ## Status
 
-- [ ] Single stock quotes
-- [ ] Multiple stock quotes
-- [x] Single stock quote history
+All of these are available through Yahoo finance:
+
+- [x] Single security quotes
+- [x] Multiple securities quotes
+- [x] Single security quote history
+- [ ] Single security dividend/split history
+- [ ] Security look-up by symbol/name
 - [ ] Option chains
 - [ ] Currency pairs quotes
+- [ ] International securities quotes
+- [ ] Sector/Industry compositions
+- [ ] Key Stats
+- [ ] Test Coverage w/ mocks
+
 
 ## Features
 
-### Historical
+
+### Single security quotes
 
 ```go
 package main
@@ -47,18 +57,56 @@ import (
 
 func main() {
 
-	// Init a client.
-	c, err := finance.NewClient()
-	if err != nil {
-		panic(err)
-	}
+  // 15-min delayed full quote for Apple.
+	q := finance.GetQuotes("AAPL")
+	fmt.Println(q)
 
-	// Set time bounds to 1 month starting Jan. 1.
+}
+```
+
+### Multiple securities quotes
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+  // 15-min delayed full quotes for Apple, Twitter, and Facebook.
+  symbols := []string{"AAPL", "TWTR", "FB"}
+	quotes := finance.GetQuotes(symbols)
+	fmt.Println(quotes)
+
+}
+```
+
+### Quote history
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+  // Set time bounds to 1 month starting Jan. 1.
 	start, _ := time.Parse(time.RFC3339, "2016-01-01T16:00:00+00:00")
 	end := start.AddDate(0, 1, 0)
 
-	// Request history for TWTR.
-	bars := c.GetQuoteHistory("TWTR", start, end)
+	// Request daily history for TWTR.
+	// IntervalDaily OR IntervalWeekly OR IntervalMonthly are supported.
+	bars := finance.GetQuoteHistory("TWTR", start, end, finance.IntervalDaily)
 	fmt.Println(bars)
 
 }
