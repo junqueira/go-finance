@@ -1,6 +1,6 @@
 # go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance)
 
-`go-finance` is a no-nonsense library for accessing the Yahoo! Finance API. It's not completely done yet - check Status section.
+`go-finance` is a Golang library for quantitative finance. It's not completely done yet - check Status section.
 
 To install go-finance, use the following command:
 
@@ -8,9 +8,9 @@ To install go-finance, use the following command:
 go get github.com/FlashBoys/go-finance
 ```
 
-### Goal
+### Intentions
 
-`go-finance` aims to provide a clean, flexible, and thorough implementation of the full suite of Yahoo! Finance APIs. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints.
+`go-finance` aims to provide a clean, flexible, way to analyze financial data in your own projects. This is accomplished through an implementation of the full suite of Yahoo! Finance APIs and inevitably several other sources. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints.
 The primary technical tenants of this project are:
 
   * Make financial data easy and fun to work with in Go-lang.
@@ -18,8 +18,8 @@ The primary technical tenants of this project are:
 
 There are several applications for this library. It's intentions are to be conducive to the following activities:
 
-  * Quantitative financial analysis in Go-lang.
-  * Academic mathematical financial analysis.
+  * Quantitative financial analysis in Golang.
+  * Academic study/comparison in a clean, easy language.
   * Algorithmic/Statistic based strategy implementation.
 
 ### Similar Projects
@@ -29,25 +29,16 @@ I've taken features from the following projects, chosen for their stability, wid
   * [pandas datareader](https://github.com/pydata/pandas-datareader) (Python) wide-spread use in academia.
   * [yahoofinance-api](https://github.com/sstrickx/yahoofinance-api) (Java) most popular java library for this purpose.
   * [quantmod](http://www.quantmod.com/) (R) a package for development/testing/deployment of quant strategy.
-  * [yahoo-finance-managed](https://code.google.com/archive/p/yahoo-finance-managed/) (.NET) huge quantity of features.
-
-### Motivation
-
-Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of financial data YQL tables in varying degrees of deprecation, conflation/realtime, exchange availability, protocol access, and overall lack of consistent usage guidelines/documentation, I advise users of this library to be aware that you should not depend on it returning data to you 100% of the time. Build fail-safes and back-up plans into your own systems tasked with handling these cases as they arise. You should also probably complain to Yahoo to build better financial engineering tools since so many of us depend on them.
-
-While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community, those concepts are not the focus of this project. A good place to start there would be [Gota](https://github.com/kniren/gota). In the future, tabular data will be the focus! I just have to determine the easiest way to integrate it in my current projects.
 
 
 ## Status
 
-All of these are available through Yahoo finance:
-
-- [x] Single security quotes
-- [x] Multiple securities quotes
-- [x] Single security quote history
-- [x] Single security dividend/split history
-- [ ] Symbols download
-- [ ] Option chains
+- [x] Single security quotes (yahoo)
+- [x] Multiple securities quotes (yahoo)
+- [x] Single security quote history (yahoo)
+- [x] Single security dividend/split history (yahoo)
+- [x] Symbols download (bats)
+- [ ] Option chains (yahoo)
 - [ ] Currency pairs quotes
 - [ ] International securities quotes
 - [ ] Sector/Industry compositions
@@ -124,7 +115,7 @@ func main() {
 }
 ```
 
-### Dividend+Split history
+### Dividend/Split history
 
 ```go
 package main
@@ -149,3 +140,37 @@ func main() {
 
 }
 ```
+
+### Symbols download
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+	// Request all BATS symbols.
+	symbols := finance.GetUSEquitySymbols()
+	fmt.Println(symbols)
+
+}
+
+```
+
+
+
+
+
+
+## Limitations (currently)
+
+Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of financial data YQL tables in varying degrees of deprecation, conflation/realtime, exchange availability, protocol access, and overall lack of consistent usage guidelines/documentation, I advise users of this library to be aware that you should not depend on it returning data to you 100% of the time. Build fail-safes and back-up plans into your own systems tasked with handling these cases as they arise. You should also probably complain to Yahoo to build better financial engineering tools since so many of us depend on them.
+
+While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community, those concepts are not the focus of this project. A good place to start there would be [Gota](https://github.com/kniren/gota). In the future, tabular data will be the focus! I just have to determine the easiest way to integrate it in my current projects.
+
+Yahoo also does not currently support a way to download a master list of symbols available. I compromised and am using BATS list for now.
