@@ -80,3 +80,22 @@ func ParseDateAndTime(dString string, tString string) time.Time {
 
 	return time.Date(d.Year(), d.Month(), d.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
 }
+
+func parseMalformedDate(in string) string {
+
+	slice := strings.Split(in, "")
+	slice = slice[1:]
+	slice = insert(slice, 4, "-")
+	slice = insert(slice, 7, "-")
+
+	return strings.Join(slice[:], "")
+}
+
+func insert(s []string, i int, x string) []string {
+
+	s = append(s, "")
+	copy(s[i+1:], s[i:])
+	s[i] = x
+
+	return s
+}

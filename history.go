@@ -17,12 +17,13 @@ const (
 	IntervalMonthly = "m"
 
 	historyURL = "http://ichart.finance.yahoo.com/table.csv"
+	divURL     = "http://ichart.finance.yahoo.com/x"
 )
 
 // Interval is the duration of the bars returned from the query.
 type Interval string
 
-// GetQuoteHistory fetches a single Quote's quote history from Yahoo Finance.
+// GetQuoteHistory fetches a single symbol's quote history from Yahoo Finance.
 func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []models.Bar) {
 
 	params := map[string]string{
@@ -49,10 +50,43 @@ func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Int
 func generateBars(symbol string, table [][]string) (bars []models.Bar) {
 
 	for idx, row := range table {
-		//fmt.Println(row)
 		if idx != 0 {
 			bars = append(bars, models.NewBar(symbol, row))
 		}
 	}
 	return bars
+}
+
+// GetDividendSplitHistory fetches a single symbol's dividend and split history from Yahoo Finance.
+func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []models.Event) {
+
+	params := map[string]string{
+		"s":      symbol,
+		"a":      strconv.Itoa(int(start.Month())),
+		"b":      strconv.Itoa(start.Day()),
+		"c":      strconv.Itoa(start.Year()),
+		"d":      strconv.Itoa(int(end.Month())),
+		"e":      strconv.Itoa(end.Day()),
+		"f":      strconv.Itoa(end.Year()),
+		"g":      "v",
+		"y":      "0",
+		"ignore": ".csv",
+	}
+
+	table, err := requestCSV(buildURL(divURL, params))
+	if err != nil {
+		fmt.Println("Error fetching dividend history: ", err)
+		return events
+	}
+
+	return generateEvents(symbol, table)
+}
+
+func generateEvents(symbol string, table [][]string) (events []models.Event) {
+	for _, row := range table {
+		if row[0] == models.Dividend || row[0] == models.Split {
+			events = append(events, models.NewEvent(symbol, row))
+		}
+	}
+	return events
 }

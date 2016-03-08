@@ -14,7 +14,7 @@ func requestCSV(url string) ([][]string, error) {
 	}
 	defer resp.Body.Close()
 	reader := csv.NewReader(resp.Body)
-	reader.Comma = ','
+	reader.FieldsPerRecord = -1
 	data, err := reader.ReadAll()
 	if err != nil {
 		return nil, err
