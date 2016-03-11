@@ -14,7 +14,8 @@ go get github.com/FlashBoys/go-finance
 The primary technical tenants of this project are:
 
   * Make financial data easy and fun to work with in Go-lang.
-  * Abstract the burden of non-sexy model serialization away from the user.
+  * Abstract the burden of non-sexy model serialization away from the end-user.
+  * Provide a mature framework where the end-user needs only be concerned with analysis instead of data sourcing.
 
 There are several applications for this library. It's intentions are to be conducive to the following activities:
 
@@ -39,9 +40,10 @@ I've taken features from the following projects, chosen for their stability, wid
 - [x] Single security dividend/split history (yahoo)
 - [x] Symbols download (bats)
 - [ ] Option chains (yahoo)
-- [ ] Currency pairs quotes
+- [x] Currency pairs quotes
 - [ ] International securities quotes
-- [ ] Sector/Industry compositions
+- [ ] Sector/Industry components
+- [ ] Indicies components
 - [ ] Key Stats
 - [ ] Test Coverage w/ mocks
 

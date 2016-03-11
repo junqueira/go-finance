@@ -9,7 +9,7 @@ import (
 func main() {
 
 	// Request all BATS symbols.
-	s := finance.GetUSEquitySymbols()
-	fmt.Println(s)
+	q := finance.GetCurrencyPairQuote(finance.USDGBP)
+	fmt.Println(q)
 
 }
