@@ -39,7 +39,7 @@ I've taken features from the following projects, chosen for their stability, wid
 - [x] Single security quote history (yahoo)
 - [x] Single security dividend/split history (yahoo)
 - [x] Symbols download (bats)
-- [ ] Option chains (yahoo)
+- [x] Option chains (google)
 - [x] Currency pairs quotes
 - [ ] International securities quotes
 - [ ] Sector/Industry components
@@ -164,7 +164,57 @@ func main() {
 
 ```
 
+### Options chains
 
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+	// Fetches the available expiration dates.
+	chain, err := finance.NewOptionsChain("AAPL")
+	if err != nil {
+		panic(err)
+	}
+
+	// Fetches puts and calls for the closest expiration date.
+	err = chain.FetchOptionsExpiringNext()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(chain.Calls)
+	fmt.Println(chain.Puts)
+
+}
+
+```
+
+### Currency pairs quotes
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/FlashBoys/go-finance"
+)
+
+func main() {
+
+	// Fetches the quote for USD/GBP pair.
+	quote := finance.GetCurrencyPairQuote(finance.USDGBP)
+	fmt.Println(quote)
+}
+
+```
 
 
 
@@ -175,4 +225,4 @@ Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of finan
 
 While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community, those concepts are not the focus of this project. A good place to start there would be [Gota](https://github.com/kniren/gota). In the future, tabular data will be the focus! I just have to determine the easiest way to integrate it in my current projects.
 
-Yahoo also does not currently support a way to download a master list of symbols available. I compromised and am using BATS list for now.
+Yahoo also does not currently support a way to download a master list of symbols available. I compromised and am using the BATS list for now.

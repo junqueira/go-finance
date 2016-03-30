@@ -2,8 +2,15 @@ package finance
 
 import (
 	"encoding/csv"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
+)
+
+var (
+	firstRegex  = regexp.MustCompile(`(\w+:)(\d+\.?\d*)`)
+	secondRegex = regexp.MustCompile(`(\w+):`)
 )
 
 // requestCSV fetches a csv from a supplied URL.
@@ -34,4 +41,26 @@ func buildURL(base string, params map[string]string) string {
 	url.RawQuery = q.Encode()
 
 	return url.String()
+}
+
+// request fetches a file from a supplied URL.
+func request(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	contents, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	result := string(contents)
+
+	return transformResult(result), err
+}
+
+func transformResult(input string) []byte {
+
+	json := firstRegex.ReplaceAllString(input, "$1\"$2\"")
+	return []byte(secondRegex.ReplaceAllString(json, "\"$1\":"))
 }

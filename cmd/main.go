@@ -8,8 +8,7 @@ import (
 
 func main() {
 
-	// Request all BATS symbols.
-	q := finance.GetCurrencyPairQuote(finance.USDGBP)
-	fmt.Println(q)
-
+	// Fetches the quote for USD/GBP pair.
+	quote := finance.GetCurrencyPairQuote(finance.USDGBP)
+	fmt.Println(quote)
 }

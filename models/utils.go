@@ -24,7 +24,7 @@ func ToFloat(value interface{}) float64 {
 // ToInt converts a string to an int.
 func ToInt(value string) int {
 
-	if value == "N/A" {
+	if value == "N/A" || value == "-" {
 		return 0
 	}
 
@@ -38,7 +38,7 @@ func ToInt(value string) int {
 // ToDecimal converts a string to a decimal value.
 func ToDecimal(value string) decimal.Decimal {
 
-	if value == "N/A" {
+	if value == "N/A" || value == "-" {
 		return decimal.Decimal{}
 	}
 
