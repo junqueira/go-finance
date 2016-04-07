@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-
-	"github.com/FlashBoys/go-finance/models"
 )
 
 const (
@@ -24,7 +22,7 @@ const (
 type Interval string
 
 // GetQuoteHistory fetches a single symbol's quote history from Yahoo Finance.
-func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []models.Bar) {
+func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []Bar) {
 
 	params := map[string]string{
 		"s":      symbol,
@@ -47,18 +45,18 @@ func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Int
 	return generateBars(symbol, table)
 }
 
-func generateBars(symbol string, table [][]string) (bars []models.Bar) {
+func generateBars(symbol string, table [][]string) (bars []Bar) {
 
 	for idx, row := range table {
 		if idx != 0 {
-			bars = append(bars, models.NewBar(symbol, row))
+			bars = append(bars, NewBar(symbol, row))
 		}
 	}
 	return bars
 }
 
 // GetDividendSplitHistory fetches a single symbol's dividend and split history from Yahoo Finance.
-func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []models.Event) {
+func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []Event) {
 
 	params := map[string]string{
 		"s":      symbol,
@@ -82,10 +80,10 @@ func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (eve
 	return generateEvents(symbol, table)
 }
 
-func generateEvents(symbol string, table [][]string) (events []models.Event) {
+func generateEvents(symbol string, table [][]string) (events []Event) {
 	for _, row := range table {
-		if row[0] == models.Dividend || row[0] == models.Split {
-			events = append(events, models.NewEvent(symbol, row))
+		if row[0] == Dividend || row[0] == Split {
+			events = append(events, NewEvent(symbol, row))
 		}
 	}
 	return events

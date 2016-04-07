@@ -3,8 +3,6 @@ package finance
 import (
 	"fmt"
 	"strings"
-
-	"github.com/FlashBoys/go-finance/models"
 )
 
 // USDGBP -  Currency Pairs.
@@ -110,27 +108,27 @@ const (
 )
 
 // GetCurrencyPairQuote fetches a single currency pair's quote from Yahoo Finance.
-func GetCurrencyPairQuote(symbol string) models.FXPairQuote {
+func GetCurrencyPairQuote(symbol string) FXPairQuote {
 
 	params := map[string]string{
 		"s": symbol,
-		"f": strings.Join(models.QuoteFields[:], ""),
+		"f": strings.Join(quoteFields[:], ""),
 		"e": ".csv",
 	}
 
 	table, err := requestCSV(buildURL(quoteURL, params))
 	if err != nil {
 		fmt.Println("Error fetching pair: ", err)
-		return models.FXPairQuote{}
+		return FXPairQuote{}
 	}
 
 	return generatePairQuotes(table)[0]
 }
 
-func generatePairQuotes(table [][]string) (pairs []models.FXPairQuote) {
+func generatePairQuotes(table [][]string) (pairs []FXPairQuote) {
 
 	for _, row := range table {
-		pairs = append(pairs, models.NewFXPairQuote(row))
+		pairs = append(pairs, NewFXPairQuote(row))
 	}
 	return pairs
 }

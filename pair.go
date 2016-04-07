@@ -1,4 +1,4 @@
-package models
+package finance
 
 import (
 	"time"
@@ -39,20 +39,20 @@ type FXPairQuote struct {
 func NewFXPairQuote(row []string) FXPairQuote {
 
 	fields := make(map[string]string, 0)
-	for idx, v := range QuoteFields {
+	for idx, v := range quoteFields {
 		fields[v] = row[idx]
 	}
 
 	return FXPairQuote{
 		Symbol:           fields["s"],
 		PairName:         fields["n"],
-		LastTime:         ParseDateAndTime(fields["d1"], fields["t1"]),
-		LastRate:         ToDecimal(fields["l1"]),
-		ChangeNominal:    ToDecimal(fields["c1"]),
-		ChangePercent:    ToDecimal(fields["p2"]),
-		DayLow:           ToDecimal(fields["g"]),
-		DayHigh:          ToDecimal(fields["h"]),
-		FiftyTwoWeekLow:  ToDecimal(fields["j"]),
-		FiftyTwoWeekHigh: ToDecimal(fields["k"]),
+		LastTime:         parseDateAndTime(fields["d1"], fields["t1"]),
+		LastRate:         toDecimal(fields["l1"]),
+		ChangeNominal:    toDecimal(fields["c1"]),
+		ChangePercent:    toDecimal(fields["p2"]),
+		DayLow:           toDecimal(fields["g"]),
+		DayHigh:          toDecimal(fields["h"]),
+		FiftyTwoWeekLow:  toDecimal(fields["j"]),
+		FiftyTwoWeekHigh: toDecimal(fields["k"]),
 	}
 }

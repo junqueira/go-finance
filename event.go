@@ -1,7 +1,6 @@
-package models
+package finance
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -26,20 +25,14 @@ type Event struct {
 // NewEvent creates a new instance of an event struct.
 func NewEvent(symbol string, row []string) Event {
 
-	e := Event{Symbol: symbol, EventType: row[0]}
-
-	dateString := parseMalformedDate(row[1])
-
-	// Convert date and set time to market close.
-	date, err := time.Parse("2006-01-02", dateString)
-	if err != nil {
-		fmt.Println("Error serializing historical date: ", err)
-		// return e
+	e := Event{
+		Symbol:    symbol,
+		EventType: row[0],
+		Date:      parseDashedDate(parseMalformedDate(row[1])),
 	}
-	e.Date = date.Add(time.Hour * 16)
 
 	if e.EventType == Dividend {
-		e.DividendAmt = ToDecimal(row[2])
+		e.DividendAmt = toDecimal(row[2])
 	} else {
 		e.SplitRatio = row[2]
 	}
