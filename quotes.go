@@ -1,6 +1,9 @@
 package finance
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 const quoteURL = "http://download.finance.yahoo.com/d/quotes.csv"
 
@@ -13,7 +16,7 @@ func GetQuote(symbol string) (*Quote, error) {
 		"e": ".csv",
 	}
 
-	table, err := requestTable(quoteURL, params)
+	table, err := getQuotesTable(buildURL(quoteURL, params))
 	if err != nil {
 		return nil, err
 	}
@@ -29,18 +32,28 @@ func GetQuotes(symbols []string) ([]*Quote, error) {
 		"e": ".csv",
 	}
 
-	table, err := requestTable(quoteURL, params)
+	table, err := getQuotesTable(buildURL(quoteURL, params))
 	if err != nil {
 		return nil, err
 	}
 	return generateQuotes(table), nil
 }
 
+// requestTable fetches the quotes data table from the endpoint.
+func getQuotesTable(url string) ([][]string, error) {
+
+	table, err := requestCSV(url)
+	if err != nil {
+		return nil, fmt.Errorf("request table error:  (error was: %s)\n", err.Error())
+	}
+	return table, nil
+}
+
 // generateQuotes turns the raw table data of quotes into proper quote structs.
 func generateQuotes(table [][]string) (quotes []*Quote) {
 
 	for _, row := range table {
-		quotes = append(quotes, NewQuote(row))
+		quotes = append(quotes, newQuote(row))
 	}
 	return quotes
 }

@@ -89,10 +89,10 @@ type Quote struct {
 	EPSEstNextQuarter  decimal.Decimal
 }
 
-// NewQuote creates a new instance of a quote.
-func NewQuote(row []string) *Quote {
+// newQuote creates a new instance of a quote.
+func newQuote(row []string) *Quote {
 
-	fields := make(map[string]string, 0)
+	fields := make(map[string]string)
 	for idx, v := range quoteFields {
 		fields[v] = row[idx]
 	}

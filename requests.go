@@ -2,7 +2,6 @@ package finance
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,18 +13,9 @@ var (
 	secondRegex = regexp.MustCompile(`(\w+):`)
 )
 
-// requestTable fetches the data table from the endpoint.
-func requestTable(url string, params map[string]string) ([][]string, error) {
-
-	table, err := requestCSV(buildURL(url, params))
-	if err != nil {
-		return nil, fmt.Errorf("request table error:  (error was: %s)\n", err.Error())
-	}
-	return table, nil
-}
-
 // requestCSV fetches a csv from a supplied URL.
 func requestCSV(url string) ([][]string, error) {
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
