@@ -17,7 +17,7 @@ func Test_GetSymbolsFromURL(t *testing.T) {
 	assert.Nil(t, err)
 
 	// Then the returned table should have a lot of rows-
-	assert.Len(t, table, 647)
+	assert.NotEmpty(t, table)
 }
 
 func Test_ProcessSymbols(t *testing.T) {
