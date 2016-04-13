@@ -1,4 +1,5 @@
-# go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance)
+# go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance) [![codecov.io](https://codecov.io/github/FlashBoys/go-finance/coverage.svg?branch=master)](https://codecov.io/github/FlashBoys/go-finance?branch=master)
+
 
 ![codecov.io](https://codecov.io/github/FlashBoys/go-finance/branch.svg?branch=master)
 
