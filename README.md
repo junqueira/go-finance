@@ -1,5 +1,9 @@
-# go-finance [![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance) [![codecov.io](https://codecov.io/github/FlashBoys/go-finance/coverage.svg?branch=master)](https://codecov.io/github/FlashBoys/go-finance?branch=master)
+# go-finance
 
+[![GoDoc](https://godoc.org/github.com/FlashBoys/go-finance?status.svg)](https://godoc.org/github.com/FlashBoys/go-finance)
+[![Build Status](https://travis-ci.org/FlashBoys/go-finance.svg?branch=master)](https://travis-ci.org/FlashBoys/go-finance) [![codecov.io](https://codecov.io/github/FlashBoys/go-finance/coverage.svg?branch=master)](https://codecov.io/github/FlashBoys/go-finance?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Flashboys/go-finance)](https://goreportcard.com/report/github.com/Flashboys/go-finance)
+[![License MIT](https://img.shields.io/npm/l/express.svg)](http://opensource.org/licenses/MIT)
 
 ![codecov.io](https://codecov.io/github/FlashBoys/go-finance/branch.svg?branch=master)
 

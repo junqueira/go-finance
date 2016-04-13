@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_newQuote(t *testing.T) {
+func Test_NewQuote(t *testing.T) {
 
 	// Given we have a csv with quote data.
 	table := getFixtureAsTable("quote_fixture.csv")

@@ -22,10 +22,10 @@ type Event struct {
 	SplitRatio  string
 }
 
-// NewEvent creates a new instance of an event struct.
-func NewEvent(symbol string, row []string) Event {
+// newEvent creates a new instance of an event struct.
+func newEvent(symbol string, row []string) *Event {
 
-	e := Event{
+	e := &Event{
 		Symbol:    symbol,
 		EventType: row[0],
 		Date:      parseDashedDate(parseMalformedDate(row[1])),

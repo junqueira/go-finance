@@ -7,7 +7,7 @@ import (
 )
 
 // FXFields are the requested fx pair fields.
-var FXFields = []string{
+var fXFields = []string{
 	"s",  // Symbol
 	"n",  // Name
 	"d1", // LastTradeDate
@@ -35,15 +35,15 @@ type FXPairQuote struct {
 	FiftyTwoWeekHigh decimal.Decimal
 }
 
-// NewFXPairQuote creates a new instance of quote of a currency pair.
-func NewFXPairQuote(row []string) FXPairQuote {
+// newFXPairQuote creates a new instance of quote of a currency pair.
+func newFXPairQuote(row []string) *FXPairQuote {
 
 	fields := make(map[string]string, 0)
-	for idx, v := range quoteFields {
+	for idx, v := range fXFields {
 		fields[v] = row[idx]
 	}
 
-	return FXPairQuote{
+	return &FXPairQuote{
 		Symbol:           fields["s"],
 		PairName:         fields["n"],
 		LastTime:         parseDateAndTime(fields["d1"], fields["t1"]),

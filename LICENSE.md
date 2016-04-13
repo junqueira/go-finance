@@ -1,3 +1,5 @@
+The MIT License (MIT)
+
 Copyright © 2016, Michael Ackley <ackleymi@gmail.com>
 
 Permission to use, copy, modify, and/or distribute this software for any purpose

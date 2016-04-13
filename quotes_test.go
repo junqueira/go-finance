@@ -16,9 +16,13 @@ import (
 func getFixtureAsTable(filename string) [][]string {
 
 	path := "./fixtures/" + filename
-	f, _ := os.Open(path)
+	f, err := os.Open(path)
 	r := csv.NewReader(bufio.NewReader(f))
-	table, _ := r.ReadAll()
+	r.FieldsPerRecord = -1
+	table, err := r.ReadAll()
+	if err != nil {
+		fmt.Println(err)
+	}
 	return table
 }
 

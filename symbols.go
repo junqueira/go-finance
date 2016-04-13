@@ -15,11 +15,13 @@ func GetUSEquitySymbols() ([]string, error) {
 	return processSymbols(table), nil
 }
 
+// getSymbolsFromURL fetches the csv from the endpoint.
 func getSymbolsFromURL(url string) (table [][]string, err error) {
 
 	return requestCSV(symbolsURL)
 }
 
+// processSymbols turns the raw table data of quotes into a slice of symbols.
 func processSymbols(table [][]string) (symbols []string) {
 
 	for idx, row := range table {

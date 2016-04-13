@@ -60,6 +60,7 @@ func request(url string) ([]byte, error) {
 	return transformResult(result), err
 }
 
+// transformResult parses malformed json responses.
 func transformResult(input string) []byte {
 
 	json := firstRegex.ReplaceAllString(input, "$1\"$2\"")

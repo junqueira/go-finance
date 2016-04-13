@@ -22,7 +22,7 @@ const (
 type Interval string
 
 // GetQuoteHistory fetches a single symbol's quote history from Yahoo Finance.
-func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []Bar) {
+func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []*Bar, err error) {
 
 	params := map[string]string{
 		"s":      symbol,
@@ -36,27 +36,16 @@ func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Int
 		"ignore": ".csv",
 	}
 
-	table, err := requestCSV(buildURL(historyURL, params))
+	table, err := getHistoryTable(buildURL(historyURL, params))
 	if err != nil {
-		fmt.Println("Error fetching history: ", err)
-		return bars
+		return bars, err
 	}
 
-	return generateBars(symbol, table)
-}
-
-func generateBars(symbol string, table [][]string) (bars []Bar) {
-
-	for idx, row := range table {
-		if idx != 0 {
-			bars = append(bars, NewBar(symbol, row))
-		}
-	}
-	return bars
+	return generateBars(symbol, table), nil
 }
 
 // GetDividendSplitHistory fetches a single symbol's dividend and split history from Yahoo Finance.
-func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []Event) {
+func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []*Event, err error) {
 
 	params := map[string]string{
 		"s":      symbol,
@@ -71,19 +60,37 @@ func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (eve
 		"ignore": ".csv",
 	}
 
-	table, err := requestCSV(buildURL(divURL, params))
+	table, err := getHistoryTable(buildURL(divURL, params))
 	if err != nil {
-		fmt.Println("Error fetching dividend history: ", err)
-		return events
+		return events, err
 	}
 
-	return generateEvents(symbol, table)
+	return generateEvents(symbol, table), nil
 }
 
-func generateEvents(symbol string, table [][]string) (events []Event) {
+func getHistoryTable(url string) ([][]string, error) {
+
+	table, err := requestCSV(url)
+	if err != nil {
+		return nil, fmt.Errorf("request history table error:  (error was: %s)\n", err.Error())
+	}
+	return table, nil
+}
+
+func generateBars(symbol string, table [][]string) (bars []*Bar) {
+
+	for idx, row := range table {
+		if idx != 0 {
+			bars = append(bars, newBar(symbol, row))
+		}
+	}
+	return bars
+}
+
+func generateEvents(symbol string, table [][]string) (events []*Event) {
 	for _, row := range table {
 		if row[0] == Dividend || row[0] == Split {
-			events = append(events, NewEvent(symbol, row))
+			events = append(events, newEvent(symbol, row))
 		}
 	}
 	return events

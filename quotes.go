@@ -39,7 +39,7 @@ func GetQuotes(symbols []string) ([]*Quote, error) {
 	return generateQuotes(table), nil
 }
 
-// requestTable fetches the quotes data table from the endpoint.
+// getQuotesTable fetches the quotes data table from the endpoint.
 func getQuotesTable(url string) ([][]string, error) {
 
 	table, err := requestCSV(url)

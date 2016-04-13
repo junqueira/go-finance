@@ -18,9 +18,9 @@ type Bar struct {
 	AdjClose decimal.Decimal
 }
 
-// NewBar creates a new instance of a bar struct.
-func NewBar(symbol string, row []string) Bar {
-	return Bar{
+// newBar creates a new instance of a bar struct.
+func newBar(symbol string, row []string) *Bar {
+	return &Bar{
 		Symbol:   symbol,
 		Date:     parseDashedDate(row[0]),
 		Open:     toDecimal(row[1]),
