@@ -11,8 +11,8 @@ type OptionChain struct {
 	Symbol          string
 	Expirations     []time.Time
 	UnderlyingPrice decimal.Decimal
-	Calls           []Option
-	Puts            []Option
+	Calls           []*Option
+	Puts            []*Option
 }
 
 // Option represents an instance of an option contract.
@@ -29,10 +29,10 @@ type Option struct {
 	OpenInterest  int
 }
 
-// NewOptionContract creates a new instance of an option.
-func NewOptionContract(option map[string]string) Option {
+// newOptionContract creates a new instance of an option.
+func newOptionContract(option map[string]string) *Option {
 
-	c := Option{
+	c := &Option{
 		ContractID:    option["cid"],
 		Security:      option["s"],
 		Strike:        toDecimal(option["strike"]),
@@ -52,11 +52,11 @@ func NewOptionContract(option map[string]string) Option {
 	return c
 }
 
-// NewContractSlice creates a new slice of contracts.
-func NewContractSlice(options []map[string]string) (contracts []Option) {
+// newContractSlice creates a new slice of contracts.
+func newContractSlice(options []map[string]string) (contracts []*Option) {
 
 	for _, op := range options {
-		contracts = append(contracts, NewOptionContract(op))
+		contracts = append(contracts, newOptionContract(op))
 	}
 
 	return contracts

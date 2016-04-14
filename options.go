@@ -2,6 +2,7 @@ package finance
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -32,6 +33,9 @@ func NewOptionsChain(symbol string) (oc *OptionChain, err error) {
 
 	oc = &OptionChain{Symbol: symbol}
 	oc.Expirations, oc.UnderlyingPrice, err = getExpirations(symbol)
+	if err != nil {
+		return nil, err
+	}
 
 	return oc, err
 }
@@ -47,25 +51,37 @@ func getExpirations(symbol string) (expirations []time.Time, price decimal.Decim
 	}
 
 	url := buildURL(optionsURL, params)
-	b, err := request(url)
+	result, err := getOptionsData(url)
 	if err != nil {
 		return expirations, price, err
 	}
 
-	var fr fetchResult
-	err = json.Unmarshal(b, &fr)
-	if err != nil {
-		return expirations, price, err
-	}
+	return parseExpirations(result.Expirations), toDecimal(result.Price), err
+}
 
-	for _, t := range fr.Expirations {
+// parseExpirations returns valid dates from the malformed input text.
+func parseExpirations(tm []timeMap) (expirations []time.Time) {
+	for _, t := range tm {
 		dString := t.Month + "/" + t.Day + "/" + t.Year
 		expirations = append(expirations, parseDate(dString))
 	}
+	return expirations
+}
 
-	price = toDecimal(fr.Price)
+// getOptionsData fetches data from the endpoint and returns an intermediate result.
+func getOptionsData(url string) (fr *fetchResult, err error) {
 
-	return expirations, price, err
+	b, err := request(url)
+	if err != nil {
+		return nil, fmt.Errorf("options fetch error:  (error was: %s)\n", err.Error())
+	}
+
+	err = json.Unmarshal(b, &fr)
+	if err != nil {
+		return nil, fmt.Errorf("options format error:  (error was: %s)\n", err.Error())
+	}
+
+	return fr, nil
 }
 
 // GetOptionsExpiringNext fetches calls and puts with the shortest expiration date.
@@ -83,19 +99,13 @@ func (chain *OptionChain) GetOptionsExpiringNext() (err error) {
 
 	url := buildURL(optionsURL, params)
 
-	b, err := request(url)
+	result, err := getOptionsData(url)
 	if err != nil {
 		return err
 	}
 
-	var fr fetchResult
-	err = json.Unmarshal(b, &fr)
-	if err != nil {
-		return err
-	}
-
-	chain.Calls = NewContractSlice(fr.Calls)
-	chain.Puts = NewContractSlice(fr.Puts)
+	chain.Calls = newContractSlice(result.Calls)
+	chain.Puts = newContractSlice(result.Puts)
 
 	return err
 }

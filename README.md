@@ -7,52 +7,13 @@
 
 ![codecov.io](https://codecov.io/github/FlashBoys/go-finance/branch.svg?branch=master)
 
-`go-finance` is a Golang library for quantitative finance. It's not completely done yet - check Status section.
+`go-finance` is a Golang library for retrieving financial data for quantitative analysis.
 
 To install go-finance, use the following command:
 
 ```
 go get github.com/FlashBoys/go-finance
 ```
-
-### Intentions
-
-`go-finance` aims to provide a clean, flexible, way to analyze financial data in your own projects. This is accomplished through an implementation of the full suite of Yahoo! Finance APIs and inevitably several other sources. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints.
-The primary technical tenants of this project are:
-
-  * Make financial data easy and fun to work with in Go-lang.
-  * Abstract the burden of non-sexy model serialization away from the end-user.
-  * Provide a mature framework where the end-user needs only be concerned with analysis instead of data sourcing.
-
-There are several applications for this library. It's intentions are to be conducive to the following activities:
-
-  * Quantitative financial analysis in Golang.
-  * Academic study/comparison in a clean, easy language.
-  * Algorithmic/Statistic based strategy implementation.
-
-### Similar Projects
-
-I've taken features from the following projects, chosen for their stability, wide-spread usage, completeness and accuracy of the financial data we know to be publicly available, as well as how much I like using them in other projects given their own concise syntax inherent in their own design:
-
-  * [pandas datareader](https://github.com/pydata/pandas-datareader) (Python) wide-spread use in academia.
-  * [yahoofinance-api](https://github.com/sstrickx/yahoofinance-api) (Java) most popular java library for this purpose.
-  * [quantmod](http://www.quantmod.com/) (R) a package for development/testing/deployment of quant strategy.
-
-
-## Status
-
-- [x] Single security quotes (yahoo)
-- [x] Multiple securities quotes (yahoo)
-- [x] Single security quote history (yahoo)
-- [x] Single security dividend/split history (yahoo)
-- [x] Symbols download (bats)
-- [x] Option chains (google)
-- [x] Currency pairs quotes
-- [ ] International securities quotes
-- [ ] Sector/Industry components
-- [ ] Indicies components
-- [ ] Key Stats
-- [ ] Test Coverage w/ mocks
 
 
 ## Features
@@ -71,8 +32,10 @@ import (
 func main() {
 
   // 15-min delayed full quote for Apple.
-	q := finance.GetQuote("AAPL")
-	fmt.Println(q)
+	q, err := finance.GetQuote("AAPL")
+  if err == nil {
+    fmt.Println(q)
+  }
 
 }
 ```
@@ -92,8 +55,10 @@ func main() {
 
   // 15-min delayed full quotes for Apple, Twitter, and Facebook.
   symbols := []string{"AAPL", "TWTR", "FB"}
-	quotes := finance.GetQuotes(symbols)
-	fmt.Println(quotes)
+	quotes, err := finance.GetQuotes(symbols)
+  if err == nil {
+    fmt.Println(quotes)
+  }
 
 }
 ```
@@ -118,8 +83,10 @@ func main() {
 
 	// Request daily history for TWTR.
 	// IntervalDaily OR IntervalWeekly OR IntervalMonthly are supported.
-	bars := finance.GetQuoteHistory("TWTR", start, end, finance.IntervalDaily)
-	fmt.Println(bars)
+	bars, err := finance.GetQuoteHistory("TWTR", start, end, finance.IntervalDaily)
+  if err == nil {
+    fmt.Println(bars)
+  }
 
 }
 ```
@@ -139,13 +106,15 @@ import (
 func main() {
 
 	// Set time range from Jan 2010 up to the current date.
-  // This example will return a slice of both dividends and the split.
+  // This example will return a slice of both dividends and splits.
 	start, _ := time.Parse(time.RFC3339, "2010-01-01T16:00:00+00:00")
 	end := time.Now()
 
 	// Request event history for AAPL.
-	events := finance.GetDividendSplitHistory("AAPL", start, end)
-	fmt.Println(events)
+	events, err := finance.GetDividendSplitHistory("AAPL", start, end)
+  if err == nil {
+    fmt.Println(events)
+  }
 
 }
 ```
@@ -164,8 +133,10 @@ import (
 func main() {
 
 	// Request all BATS symbols.
-	symbols := finance.GetUSEquitySymbols()
-	fmt.Println(symbols)
+	symbols, err := finance.GetUSEquitySymbols()
+  if err == nil {
+    fmt.Println(symbols)
+  }
 
 }
 
@@ -192,12 +163,10 @@ func main() {
 
 	// Fetches puts and calls for the closest expiration date.
 	err = chain.FetchOptionsExpiringNext()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(chain.Calls)
-	fmt.Println(chain.Puts)
+	if err == nil {
+    fmt.Println(chain.Calls)
+  	fmt.Println(chain.Puts)
+  }
 
 }
 
@@ -217,19 +186,55 @@ import (
 func main() {
 
 	// Fetches the quote for USD/GBP pair.
-	quote := finance.GetCurrencyPairQuote(finance.USDGBP)
-	fmt.Println(quote)
+	pq, err := finance.GetCurrencyPairQuote(finance.USDGBP)
+  if err == nil {
+    fmt.Println(pq)
+  }
+
 }
 
 ```
 
+## Intentions
 
+`go-finance` aims to provide a clean, flexible, way to retrieve financial data for your own projects. This is accomplished through an implementation of the full suite of Yahoo! Finance APIs and other sources. After much consideration and exploration of the labyrinthian endpoint system in the Yahoo Finance ecosystem, I've done my best to select and document proper consumption of the seemingly most stable endpoints.
+The primary technical tenants of this project are:
 
+  * Make financial data easy and fun to work with in Go-lang.
+  * Abstract the burden of non-sexy model serialization away from the end-user.
+  * Provide a mature framework where the end-user needs only be concerned with analysis instead of data sourcing.
+
+There are several applications for this library. It's intentions are to be conducive to the following activities:
+
+  * Quantitative financial analysis in Golang.
+  * Academic study/comparison in a clean, easy language.
+  * Algorithmic/Statistical-based strategy implementation.
+
+## To-do
+
+- [ ] More ways to pull options data
+- [ ] International securities quotes
+- [ ] Sector/Industry components
+- [ ] Indicies components
+- [ ] Key stats (full profile) for securities
 
 ## Limitations (currently)
 
 Given Yahoo! Finance's own perpetuation of a rabbit warren -like system of financial data YQL tables in varying degrees of deprecation, conflation/realtime, exchange availability, protocol access, and overall lack of consistent usage guidelines/documentation, I advise users of this library to be aware that you should not depend on it returning data to you 100% of the time. Build fail-safes and back-up plans into your own systems tasked with handling these cases as they arise. You should also probably complain to Yahoo to build better financial engineering tools since so many of us depend on them.
 
-While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community, those concepts are not the focus of this project. A good place to start there would be [Gota](https://github.com/kniren/gota). In the future, tabular data will be the focus! I just have to determine the easiest way to integrate it in my current projects.
+While dataframes (tabular data structures used for analytical operations atypical of what you see in the beaten track of web programming) are popular in the financial development community for use in prototyping models, those concepts are not the current focus of this project.
 
 Yahoo also does not currently support a way to download a master list of symbols available. I compromised and am using the BATS list for now.
+
+## Contributing
+
+If you find this repo helpful, please give it a star. If you wish to discuss changes to it, please open an issue! This project is not as mature as it could be, and financial projects in Golang are in drastic need of some basic helpful dependencies as this repo aims to be.
+
+
+## Similar Projects
+
+I've taken features from the following projects, chosen for their stability, wide-spread usage, completeness and accuracy of the financial data we know to be publicly available, as well as how much I like using them in other projects given their own concise syntax inherent in their own design:
+
+  * [pandas datareader](https://github.com/pydata/pandas-datareader) (Python) wide-spread use in academia.
+  * [yahoofinance-api](https://github.com/sstrickx/yahoofinance-api) (Java) most popular java library for this purpose.
+  * [quantmod](http://www.quantmod.com/) (R) a package for development/testing/deployment of quant strategy.
