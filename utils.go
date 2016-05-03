@@ -1,7 +1,6 @@
 package finance
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,10 +11,10 @@ import (
 // toInt converts a string to an int.
 func toInt(value string) int {
 
-	i, err := strconv.Atoi(value)
-	if err != nil {
-		fmt.Println("error converting ", value, " to int: ", err)
-	}
+	i, _ := strconv.Atoi(value)
+	// if err != nil {
+	// 	fmt.Println("error converting ", value, " to int: ", err)
+	// }
 
 	return i
 }
@@ -26,7 +25,7 @@ func toDecimal(value string) decimal.Decimal {
 	value = strings.Replace(value, "%", "", -1)
 	dec, err := decimal.NewFromString(value)
 	if err != nil {
-		fmt.Println("error converting ", value, " to decimal value: ", err)
+		// fmt.Println("error converting ", value, " to decimal value: ", err)
 		return decimal.NewFromFloat(0.0)
 	}
 
@@ -38,7 +37,7 @@ func parseDate(dString string) time.Time {
 
 	d, err := time.Parse("1/2/2006", dString)
 	if err != nil {
-		fmt.Println("error converting ", dString, " to date: ", err)
+		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	return d
@@ -49,12 +48,12 @@ func parseDateAndTime(dString string, tString string) time.Time {
 
 	d, err := time.Parse("1/2/2006", dString)
 	if err != nil {
-		fmt.Println("error converting ", dString, " to date: ", err)
+		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	t, err := time.Parse("3:04pm", tString)
 	if err != nil {
-		fmt.Println("error converting ", tString, " to time: ", err)
+		// fmt.Println("error converting ", tString, " to time: ", err)
 		return time.Time{}
 	}
 	loc, _ := time.LoadLocation("America/New_York")
@@ -67,7 +66,7 @@ func parseDashedDate(dString string) time.Time {
 
 	date, err := time.Parse("2006-01-02", dString)
 	if err != nil {
-		fmt.Println("error converting ", dString, " to date: ", err)
+		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	return date.Add(time.Hour * 16)

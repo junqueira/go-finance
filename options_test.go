@@ -2,28 +2,28 @@ package finance
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ParseExpirations(t *testing.T) {
+func Test_URLParams(t *testing.T) {
 
-	// Given we have a slice of timeMaps,
-	tms := []timeMap{timeMap{Month: "4", Day: "1", Year: "2016"}}
+	// Given we have an expiration and a symbol,
+	e := &Expiration{Month: "4", Day: "1", Year: "2016"}
+	symbol := "TWTR"
 
-	// When we parse them to dates,
-	dates := parseExpirations(tms)
+	// When we convert them to params,
+	params := urlParams(symbol, e)
 
-	// Then the returned slice should have 1 -
-	assert.Len(t, dates, 1)
+	// Then the returned map should have length-
+	assert.Len(t, params, 5)
 
-	d := dates[0]
-
-	// And the date should equal-
-	assert.Equal(t, 1, d.Day())
-	assert.Equal(t, time.April, d.Month())
-	assert.Equal(t, 2016, d.Year())
+	// And the entries should equal-
+	assert.Equal(t, params["q"], symbol)
+	assert.Equal(t, params["expd"], "1")
+	assert.Equal(t, params["expm"], "4")
+	assert.Equal(t, params["expy"], "2016")
+	assert.Equal(t, params["output"], "json")
 
 }
 

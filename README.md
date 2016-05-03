@@ -161,12 +161,30 @@ func main() {
 		panic(err)
 	}
 
+	// Some examples - see docs for full explanation.
+
 	// Fetches puts and calls for the closest expiration date.
-	err = chain.FetchOptionsExpiringNext()
+	calls, puts, err := chain.GetOptionsExpiringNext()
 	if err == nil {
-    fmt.Println(chain.Calls)
-  	fmt.Println(chain.Puts)
+		panic(err)
   }
+	fmt.Println(calls)
+	fmt.Println(puts)
+
+	// Fetches puts and calls for the specified expiration date.
+	calls, puts, err := chain.GetOptionsForExpiration(chain.Expirations[1])
+	if err == nil {
+		panic(err)
+	}
+	fmt.Println(calls)
+	fmt.Println(puts)
+
+	// Fetches calls for the specified expiration date.
+	calls, err := chain.GetCallsForExpiration(chain.Expirations[1])
+	if err == nil {
+		panic(err)
+	}
+	fmt.Println(calls)
 
 }
 
@@ -212,7 +230,7 @@ There are several applications for this library. It's intentions are to be condu
 
 ## To-do
 
-- [ ] More ways to pull options data
+- [ ] Add greeks calculations to options data
 - [ ] International securities quotes
 - [ ] Sector/Industry components
 - [ ] Indicies components

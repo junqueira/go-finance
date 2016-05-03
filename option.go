@@ -1,18 +1,12 @@
 package finance
 
-import (
-	"time"
-
-	"github.com/shopspring/decimal"
-)
+import "github.com/shopspring/decimal"
 
 // OptionChain contains the option contracts for a given symbol and expiration.
 type OptionChain struct {
 	Symbol          string
-	Expirations     []time.Time
 	UnderlyingPrice decimal.Decimal
-	Calls           []*Option
-	Puts            []*Option
+	Expirations     []*Expiration
 }
 
 // Option represents an instance of an option contract.
@@ -60,4 +54,14 @@ func newContractSlice(options []map[string]string) (contracts []*Option) {
 	}
 
 	return contracts
+}
+
+func (chain *OptionChain) expirationExists(e *Expiration) bool {
+
+	for _, exp := range chain.Expirations {
+		if exp.Day == e.Day && exp.Month == e.Month && exp.Year == e.Year {
+			return true
+		}
+	}
+	return false
 }

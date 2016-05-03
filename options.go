@@ -3,7 +3,6 @@ package finance
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -13,15 +12,9 @@ const (
 	optionsURL = "http://www.google.com/finance/option_chain?"
 )
 
-type timeMap struct {
-	Month string `json:"m"`
-	Day   string `json:"d"`
-	Year  string `json:"y"`
-}
-
 type fetchResult struct {
 	Expiry      json.RawMessage     `json:"expiry"`
-	Expirations []timeMap           `json:"expirations"`
+	Expirations []*Expiration       `json:"expirations"`
 	Underlying  json.RawMessage     `json:"underlying_id"`
 	Price       string              `json:"underlying_price"`
 	Calls       []map[string]string `json:"calls,omitempty"`
@@ -32,7 +25,7 @@ type fetchResult struct {
 func NewOptionsChain(symbol string) (oc *OptionChain, err error) {
 
 	oc = &OptionChain{Symbol: symbol}
-	oc.Expirations, oc.UnderlyingPrice, err = getExpirations(symbol)
+	oc.Expirations, oc.UnderlyingPrice, err = chainExpirations(symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -40,32 +33,33 @@ func NewOptionsChain(symbol string) (oc *OptionChain, err error) {
 	return oc, err
 }
 
-func getExpirations(symbol string) (expirations []time.Time, price decimal.Decimal, err error) {
+// chainExpirations fetches the expiration dates for an options chain.
+func chainExpirations(symbol string) (expirations []*Expiration, price decimal.Decimal, err error) {
 
-	params := map[string]string{
-		"q":      symbol,
-		"expd":   "4",
-		"expm":   "4",
-		"expy":   "2014",
-		"output": "json",
-	}
+	e := ExpirationFromDate(time.Now())
+	params := urlParams(symbol, e)
 
 	url := buildURL(optionsURL, params)
 	result, err := getOptionsData(url)
 	if err != nil {
 		return expirations, price, err
 	}
+	for _, e := range result.Expirations {
+		e.setDate()
+	}
 
-	return parseExpirations(result.Expirations), toDecimal(result.Price), err
+	return result.Expirations, toDecimal(result.Price), err
 }
 
-// parseExpirations returns valid dates from the malformed input text.
-func parseExpirations(tm []timeMap) (expirations []time.Time) {
-	for _, t := range tm {
-		dString := t.Month + "/" + t.Day + "/" + t.Year
-		expirations = append(expirations, parseDate(dString))
+// urlParams builds url parameters from an expiration.
+func urlParams(symbol string, e *Expiration) map[string]string {
+	return map[string]string{
+		"q":      symbol,
+		"expd":   e.Day,
+		"expm":   e.Month,
+		"expy":   e.Year,
+		"output": "json",
 	}
-	return expirations
 }
 
 // getOptionsData fetches data from the endpoint and returns an intermediate result.
@@ -84,28 +78,57 @@ func getOptionsData(url string) (fr *fetchResult, err error) {
 	return fr, nil
 }
 
-// GetOptionsExpiringNext fetches calls and puts with the shortest expiration date.
-func (chain *OptionChain) GetOptionsExpiringNext() (err error) {
+// GetExpirations returns the specified option's expirations
+func (chain *OptionChain) GetExpirations() []*Expiration {
+	return chain.Expirations
+}
 
-	expiry := chain.Expirations[0]
-
-	params := map[string]string{
-		"q":      chain.Symbol,
-		"expd":   strconv.Itoa(expiry.Day()),
-		"expm":   strconv.Itoa(int(expiry.Month())),
-		"expy":   strconv.Itoa(expiry.Year()),
-		"output": "json",
+// GetStrikes returns the specified option's strikes.
+func (chain *OptionChain) GetStrikes() (strikes []decimal.Decimal, err error) {
+	calls, err := chain.GetCallsForExpiration(chain.Expirations[0])
+	if err != nil {
+		return
 	}
 
-	url := buildURL(optionsURL, params)
+	for _, o := range calls {
+		strikes = append(strikes, o.Strike)
+	}
+
+	return
+}
+
+// GetOptionsExpiringNext fetches calls and puts with the shortest expiration date.
+func (chain *OptionChain) GetOptionsExpiringNext() (calls []*Option, puts []*Option, err error) {
+
+	return chain.GetOptionsForExpiration(chain.Expirations[0])
+}
+
+// GetOptionsForExpiration fetches calls and puts for the given expiration date.
+func (chain *OptionChain) GetOptionsForExpiration(e *Expiration) (calls []*Option, puts []*Option, err error) {
+
+	if !chain.expirationExists(e) {
+		err = fmt.Errorf("Expiration does not exist.")
+		return
+	}
+
+	url := buildURL(optionsURL, urlParams(chain.Symbol, e))
 
 	result, err := getOptionsData(url)
 	if err != nil {
-		return err
+		return
 	}
 
-	chain.Calls = newContractSlice(result.Calls)
-	chain.Puts = newContractSlice(result.Puts)
+	return newContractSlice(result.Calls), newContractSlice(result.Puts), nil
+}
 
-	return err
+// GetCallsForExpiration fetches calls for the given expiration date.
+func (chain *OptionChain) GetCallsForExpiration(e *Expiration) (calls []*Option, err error) {
+	calls, _, err = chain.GetOptionsForExpiration(e)
+	return
+}
+
+// GetPutsForExpiration fetches puts for the given expiration date.
+func (chain *OptionChain) GetPutsForExpiration(e *Expiration) (puts []*Option, err error) {
+	_, puts, err = chain.GetOptionsForExpiration(e)
+	return
 }
