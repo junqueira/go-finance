@@ -30,13 +30,11 @@ import (
 )
 
 func main() {
-
-  // 15-min delayed full quote for Apple.
+	// 15-min delayed full quote for Apple.
 	q, err := finance.GetQuote("AAPL")
-  if err == nil {
-    fmt.Println(q)
-  }
-
+	if err == nil {
+		fmt.Println(q)
+	}
 }
 ```
 
@@ -52,14 +50,12 @@ import (
 )
 
 func main() {
-
-  // 15-min delayed full quotes for Apple, Twitter, and Facebook.
-  symbols := []string{"AAPL", "TWTR", "FB"}
+	// 15-min delayed full quotes for Apple, Twitter, and Facebook.
+	symbols := []string{"AAPL", "TWTR", "FB"}
 	quotes, err := finance.GetQuotes(symbols)
-  if err == nil {
-    fmt.Println(quotes)
-  }
-
+	if err == nil {
+		fmt.Println(quotes)
+	}
 }
 ```
 
@@ -76,18 +72,16 @@ import (
 )
 
 func main() {
-
-  // Set time bounds to 1 month starting Jan. 1.
+	// Set time bounds to 1 month starting Jan. 1.
 	start, _ := time.Parse(time.RFC3339, "2016-01-01T16:00:00+00:00")
 	end := start.AddDate(0, 1, 0)
-
+	
 	// Request daily history for TWTR.
 	// IntervalDaily OR IntervalWeekly OR IntervalMonthly are supported.
 	bars, err := finance.GetQuoteHistory("TWTR", start, end, finance.IntervalDaily)
-  if err == nil {
-    fmt.Println(bars)
-  }
-
+	if err == nil {
+		fmt.Println(bars)
+	}
 }
 ```
 
@@ -104,18 +98,16 @@ import (
 )
 
 func main() {
-
 	// Set time range from Jan 2010 up to the current date.
-  // This example will return a slice of both dividends and splits.
+	// This example will return a slice of both dividends and splits.
 	start, _ := time.Parse(time.RFC3339, "2010-01-01T16:00:00+00:00")
 	end := time.Now()
-
+	
 	// Request event history for AAPL.
 	events, err := finance.GetDividendSplitHistory("AAPL", start, end)
-  if err == nil {
-    fmt.Println(events)
-  }
-
+	if err == nil {
+		fmt.Println(events)
+	}
 }
 ```
 
@@ -131,13 +123,11 @@ import (
 )
 
 func main() {
-
 	// Request all BATS symbols.
 	symbols, err := finance.GetUSEquitySymbols()
-  if err == nil {
-    fmt.Println(symbols)
-  }
-
+	if err == nil {
+		fmt.Println(symbols)
+	}
 }
 
 ```
@@ -154,7 +144,6 @@ import (
 )
 
 func main() {
-
 	// Fetches the available expiration dates.
 	chain, err := finance.NewOptionsChain("AAPL")
 	if err != nil {
@@ -167,7 +156,7 @@ func main() {
 	calls, puts, err := chain.GetOptionsExpiringNext()
 	if err == nil {
 		panic(err)
-  }
+  	}
 	fmt.Println(calls)
 	fmt.Println(puts)
 
@@ -185,7 +174,6 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(calls)
-
 }
 
 ```
@@ -202,13 +190,11 @@ import (
 )
 
 func main() {
-
 	// Fetches the quote for USD/GBP pair.
 	pq, err := finance.GetCurrencyPairQuote(finance.USDGBP)
-  if err == nil {
-    fmt.Println(pq)
-  }
-
+	if err == nil {
+		fmt.Println(pq)
+	}
 }
 
 ```
