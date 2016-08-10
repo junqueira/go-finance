@@ -1,4 +1,4 @@
-The MIT License (MIT)
+The ISC License
 
 Copyright © 2016, Michael Ackley <ackleymi@gmail.com>
 
