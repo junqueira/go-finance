@@ -65,7 +65,7 @@ func urlParams(symbol string, e *Expiration) map[string]string {
 // getOptionsData fetches data from the endpoint and returns an intermediate result.
 func getOptionsData(url string) (fr *fetchResult, err error) {
 
-	b, err := request(url)
+	b, err := fetch(url)
 	if err != nil {
 		return nil, fmt.Errorf("options fetch error:  (error was: %s)\n", err.Error())
 	}

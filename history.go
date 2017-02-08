@@ -70,7 +70,7 @@ func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (eve
 
 func getHistoryTable(url string) ([][]string, error) {
 
-	table, err := requestCSV(url)
+	table, err := fetchCSV(url)
 	if err != nil {
 		return nil, fmt.Errorf("request history table error:  (error was: %s)\n", err.Error())
 	}

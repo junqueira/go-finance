@@ -13,22 +13,18 @@ var (
 	secondRegex = regexp.MustCompile(`(\w+):`)
 )
 
-// requestCSV fetches a csv from a supplied URL.
-func requestCSV(url string) ([][]string, error) {
+func fetchCSV(url string) (table [][]string, err error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return
 	}
 	defer resp.Body.Close()
-	reader := csv.NewReader(resp.Body)
-	reader.FieldsPerRecord = -1
-	data, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
 
-	return data, nil
+	r := csv.NewReader(resp.Body)
+	r.FieldsPerRecord = -1
+	table, err = r.ReadAll()
+	return
 }
 
 // buildURL takes a base URL and parameters returns the full URL.
@@ -36,6 +32,7 @@ func buildURL(base string, params map[string]string) string {
 
 	url, _ := url.ParseRequestURI(base)
 	q := url.Query()
+
 	for k, v := range params {
 		q.Set(k, v)
 	}
@@ -44,8 +41,9 @@ func buildURL(base string, params map[string]string) string {
 	return url.String()
 }
 
-// request fetches a file from a supplied URL.
-func request(url string) ([]byte, error) {
+// fetch retrieves a file from a supplied URL.
+func fetch(url string) ([]byte, error) {
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return []byte{}, err
@@ -56,7 +54,6 @@ func request(url string) ([]byte, error) {
 		return []byte{}, err
 	}
 	result := string(contents)
-
 	return transformResult(result), err
 }
 

@@ -18,7 +18,7 @@ func GetUSEquitySymbols() ([]string, error) {
 // getSymbolsFromURL fetches the csv from the endpoint.
 func getSymbolsFromURL(url string) (table [][]string, err error) {
 
-	return requestCSV(symbolsURL)
+	return fetchCSV(symbolsURL)
 }
 
 // processSymbols turns the raw table data of quotes into a slice of symbols.

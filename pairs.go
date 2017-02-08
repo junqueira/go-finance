@@ -205,7 +205,7 @@ func GetCurrencyPairQuote(symbol string) (*FXPairQuote, error) {
 // getPairsQuotesTable fetches the pairs data table from the endpoint.
 func getPairsQuotesTable(url string) ([][]string, error) {
 
-	table, err := requestCSV(url)
+	table, err := fetchCSV(url)
 	if err != nil {
 		return nil, fmt.Errorf("request pairs table error:  (error was: %s)\n", err.Error())
 	}

@@ -10,12 +10,7 @@ import (
 
 // toInt converts a string to an int.
 func toInt(value string) int {
-
 	i, _ := strconv.Atoi(value)
-	// if err != nil {
-	// 	fmt.Println("error converting ", value, " to int: ", err)
-	// }
-
 	return i
 }
 
@@ -25,10 +20,8 @@ func toDecimal(value string) decimal.Decimal {
 	value = strings.Replace(value, "%", "", -1)
 	dec, err := decimal.NewFromString(value)
 	if err != nil {
-		// fmt.Println("error converting ", value, " to decimal value: ", err)
 		return decimal.NewFromFloat(0.0)
 	}
-
 	return dec
 }
 
@@ -37,7 +30,6 @@ func parseDate(dString string) time.Time {
 
 	d, err := time.Parse("1/2/2006", dString)
 	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	return d
@@ -48,16 +40,13 @@ func parseDateAndTime(dString string, tString string) time.Time {
 
 	d, err := time.Parse("1/2/2006", dString)
 	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	t, err := time.Parse("3:04pm", tString)
 	if err != nil {
-		// fmt.Println("error converting ", tString, " to time: ", err)
 		return time.Time{}
 	}
 	loc, _ := time.LoadLocation("America/New_York")
-
 	return time.Date(d.Year(), d.Month(), d.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
 }
 
@@ -66,7 +55,6 @@ func parseDashedDate(dString string) time.Time {
 
 	date, err := time.Parse("2006-01-02", dString)
 	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
 		return time.Time{}
 	}
 	return date.Add(time.Hour * 16)
@@ -86,6 +74,5 @@ func insert(s []string, i int, x string) []string {
 	s = append(s, "")
 	copy(s[i+1:], s[i:])
 	s[i] = x
-
 	return s
 }

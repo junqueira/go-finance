@@ -7,7 +7,7 @@
 
 ![codecov.io](https://codecov.io/github/FlashBoys/go-finance/branch.svg?branch=master)
 
-`go-finance` is a Golang library for retrieving financial data for quantitative analysis.
+`go-finance` is a Go library for retrieving financial data for quantitative analysis.
 
 To install go-finance, use the following command:
 
@@ -75,7 +75,7 @@ func main() {
 	// Set time bounds to 1 month starting Jan. 1.
 	start, _ := time.Parse(time.RFC3339, "2016-01-01T16:00:00+00:00")
 	end := start.AddDate(0, 1, 0)
-	
+
 	// Request daily history for TWTR.
 	// IntervalDaily OR IntervalWeekly OR IntervalMonthly are supported.
 	bars, err := finance.GetQuoteHistory("TWTR", start, end, finance.IntervalDaily)
@@ -102,7 +102,7 @@ func main() {
 	// This example will return a slice of both dividends and splits.
 	start, _ := time.Parse(time.RFC3339, "2010-01-01T16:00:00+00:00")
 	end := time.Now()
-	
+
 	// Request event history for AAPL.
 	events, err := finance.GetDividendSplitHistory("AAPL", start, end)
 	if err == nil {
