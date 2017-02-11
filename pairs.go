@@ -1,9 +1,6 @@
 package finance
 
-import (
-	"fmt"
-	"strings"
-)
+import "github.com/shopspring/decimal"
 
 const (
 	// USDGBP pair.
@@ -186,37 +183,32 @@ const (
 	HKDNZD = "HKDNZD=X"
 )
 
+// FXPairQuote represents the quote of a currency pair.
+type FXPairQuote struct {
+	Symbol           string          `yfin:"s"`
+	PairName         string          `yfin:"n"`
+	LastTradeTime    Timestamp       `yfin:"t1"`
+	LastTradeDate    Timestamp       `yfin:"d1"`
+	LastRate         decimal.Decimal `yfin:"l1"`
+	ChangeNominal    decimal.Decimal `yfin:"c1"`
+	ChangePercent    decimal.Decimal `yfin:"p2"`
+	DayLow           decimal.Decimal `yfin:"g"`
+	DayHigh          decimal.Decimal `yfin:"h"`
+	FiftyTwoWeekLow  decimal.Decimal `yfin:"j"`
+	FiftyTwoWeekHigh decimal.Decimal `yfin:"k"`
+}
+
 // GetCurrencyPairQuote fetches a single currency pair's quote from Yahoo Finance.
-func GetCurrencyPairQuote(symbol string) (*FXPairQuote, error) {
+func GetCurrencyPairQuote(symbol string) (fq FXPairQuote, err error) {
 
 	params := map[string]string{
 		"s": symbol,
-		"f": strings.Join(fXFields[:], ""),
+		"f": constructFields(fq),
 		"e": ".csv",
 	}
 
-	table, err := getPairsQuotesTable(buildURL(quoteURL, params))
-	if err != nil {
-		return nil, err
-	}
-	return generatePairQuotes(table)[0], nil
-}
+	t, err := fetchCSV(buildURL(quoteURL, params))
+	mapFields(t[0], &fq)
 
-// getPairsQuotesTable fetches the pairs data table from the endpoint.
-func getPairsQuotesTable(url string) ([][]string, error) {
-
-	table, err := fetchCSV(url)
-	if err != nil {
-		return nil, fmt.Errorf("request pairs table error:  (error was: %s)\n", err.Error())
-	}
-	return table, nil
-}
-
-// generatePairQuotes turns the raw table data of a pair quote into proper pair quote structs.
-func generatePairQuotes(table [][]string) (pairs []*FXPairQuote) {
-
-	for _, row := range table {
-		pairs = append(pairs, newFXPairQuote(row))
-	}
-	return pairs
+	return
 }
