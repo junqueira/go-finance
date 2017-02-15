@@ -201,14 +201,19 @@ type FXPairQuote struct {
 // GetCurrencyPairQuote fetches a single currency pair's quote from Yahoo Finance.
 func GetCurrencyPairQuote(symbol string) (fq FXPairQuote, err error) {
 
+	f, c := structFields(fq)
 	params := map[string]string{
 		"s": symbol,
-		"f": constructFields(fq),
+		"f": f,
 		"e": ".csv",
 	}
 
-	t, err := fetchCSV(buildURL(quoteURL, params))
-	mapFields(t[0], &fq)
+	t, err := fetchCSV(buildURL(QuoteURL, params))
+	if err != nil {
+		return
+	}
+
+	mapFields(t[0], c, &fq)
 
 	return
 }

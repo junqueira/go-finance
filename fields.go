@@ -6,7 +6,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func mapFields(vals []string, v interface{}) {
+func mapFields(vals []string, fc int, v interface{}) {
 
 	typ := reflect.TypeOf(v)
 	val := reflect.ValueOf(v).Elem()
@@ -15,7 +15,7 @@ func mapFields(vals []string, v interface{}) {
 		typ = typ.Elem()
 	}
 
-	for i := 0; i < typ.NumField(); i++ {
+	for i := 0; i < fc; i++ {
 
 		f := val.Field(i)
 
@@ -25,15 +25,16 @@ func mapFields(vals []string, v interface{}) {
 		case int:
 			f.Set(reflect.ValueOf(toInt(vals[i])))
 		case Timestamp:
-			f.Set(reflect.ValueOf(newStamp(vals[i])))
+			f.Set(reflect.ValueOf(NewStamp(vals[i])))
 		case decimal.Decimal:
 			f.Set(reflect.ValueOf(toDecimal(vals[i])))
+		case Value:
+			f.Set(reflect.ValueOf(toEventValue(vals[i])))
 		}
 	}
-
 }
 
-func constructFields(in interface{}) (fields string) {
+func structFields(in interface{}) (str string, fc int) {
 
 	typ := reflect.TypeOf(in)
 	if typ.Kind() == reflect.Ptr {
@@ -43,7 +44,12 @@ func constructFields(in interface{}) (fields string) {
 	for i := 0; i < typ.NumField(); i++ {
 		f := typ.Field(i)
 		tag := f.Tag.Get("yfin")
-		fields = fields + tag
+		if tag == "-" {
+			continue
+		}
+
+		str = str + tag
+		fc++
 	}
 
 	return

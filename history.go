@@ -1,97 +1,133 @@
 package finance
 
 import (
-	"fmt"
 	"strconv"
-	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
-	// IntervalDaily daily interval.
-	IntervalDaily = "d"
-	// IntervalWeekly weekly interval.
-	IntervalWeekly = "w"
-	// IntervalMonthly monthly interval.
-	IntervalMonthly = "m"
-
-	historyURL = "http://ichart.finance.yahoo.com/table.csv"
-	divURL     = "http://ichart.finance.yahoo.com/x"
+	// Day interval.
+	Day = "d"
+	// Week interval.
+	Week = "w"
+	// Month interval.
+	Month = "m"
+	// HistoryURL quote history
+	HistoryURL = "http://ichart.finance.yahoo.com/table.csv"
+	// EventURL event history
+	EventURL = "http://ichart.finance.yahoo.com/x"
+	// Dividend constant.
+	Dividend = "DIVIDEND"
+	// Split constant.
+	Split = "SPLIT"
 )
 
-// Interval is the duration of the bars returned from the query.
-type Interval string
+type (
+	// Interval is the duration of the bars returned from the query.
+	Interval string
+	// Bar represents a single bar(candle) in time-series of quotes.
+	Bar struct {
+		Date     Timestamp
+		Open     decimal.Decimal
+		High     decimal.Decimal
+		Low      decimal.Decimal
+		Close    decimal.Decimal
+		Volume   int
+		AdjClose decimal.Decimal
+		Symbol   string `yfin:"-"`
+	}
+	// Event contains one historical event (either a split or a dividend).
+	Event struct {
+		EventType string
+		Date      Timestamp
+		Val       Value
+		Symbol    string `yfin:"-"`
+	}
+	// Value is an event object that contains either a div amt or a split ratio.
+	Value struct {
+		Dividend decimal.Decimal
+		Ratio    string
+	}
+)
 
-// GetQuoteHistory fetches a single symbol's quote history from Yahoo Finance.
-func GetQuoteHistory(symbol string, start time.Time, end time.Time, interval Interval) (bars []*Bar, err error) {
+// GetHistory fetches a single symbol's quote history from Yahoo Finance.
+func GetHistory(symbol string, start Timestamp, end Timestamp, interval Interval) (b []Bar, err error) {
+
+	// time range:
+	// start |- | | [bars..] | | -| end
 
 	params := map[string]string{
 		"s":      symbol,
-		"a":      strconv.Itoa(int(start.Month())),
-		"b":      strconv.Itoa(start.Day()),
-		"c":      strconv.Itoa(start.Year()),
-		"d":      strconv.Itoa(int(end.Month())),
-		"e":      strconv.Itoa(end.Day()),
-		"f":      strconv.Itoa(end.Year()),
+		"a":      strconv.Itoa(start.Month),
+		"b":      strconv.Itoa(start.Day),
+		"c":      strconv.Itoa(start.Year),
+		"d":      strconv.Itoa(end.Month),
+		"e":      strconv.Itoa(end.Day),
+		"f":      strconv.Itoa(end.Year),
 		"g":      string(interval),
 		"ignore": ".csv",
 	}
 
-	table, err := getHistoryTable(buildURL(historyURL, params))
+	t, err := fetchCSV(buildURL(HistoryURL, params))
 	if err != nil {
-		return bars, err
+		return
 	}
 
-	return generateBars(symbol, table), nil
+	var nb Bar
+	_, c := structFields(nb)
+	for i, row := range t {
+
+		// Skip the header.
+		if i == 0 {
+			continue
+		}
+
+		mapFields(row, c, &nb)
+		nb.Symbol = symbol
+		b = append(b, nb)
+	}
+
+	return
 }
 
-// GetDividendSplitHistory fetches a single symbol's dividend and split history from Yahoo Finance.
-func GetDividendSplitHistory(symbol string, start time.Time, end time.Time) (events []*Event, err error) {
+// GetEventHistory fetches a single symbol's dividend and split history from Yahoo Finance.
+func GetEventHistory(symbol string, start Timestamp, end Timestamp) (e []Event, err error) {
 
 	params := map[string]string{
 		"s":      symbol,
-		"a":      strconv.Itoa(int(start.Month())),
-		"b":      strconv.Itoa(start.Day()),
-		"c":      strconv.Itoa(start.Year()),
-		"d":      strconv.Itoa(int(end.Month())),
-		"e":      strconv.Itoa(end.Day()),
-		"f":      strconv.Itoa(end.Year()),
+		"a":      strconv.Itoa(start.Month),
+		"b":      strconv.Itoa(start.Day),
+		"c":      strconv.Itoa(start.Year),
+		"d":      strconv.Itoa(end.Month),
+		"e":      strconv.Itoa(end.Day),
+		"f":      strconv.Itoa(end.Year),
 		"g":      "v",
 		"y":      "0",
 		"ignore": ".csv",
 	}
 
-	table, err := getHistoryTable(buildURL(divURL, params))
+	t, err := fetchCSV(buildURL(EventURL, params))
 	if err != nil {
-		return events, err
+		return
 	}
 
-	return generateEvents(symbol, table), nil
-}
+	var ne Event
+	_, c := structFields(ne)
+	for i, row := range t {
 
-func getHistoryTable(url string) ([][]string, error) {
+		// Skip the header.
+		if i == 0 {
+			continue
+		}
 
-	table, err := fetchCSV(url)
-	if err != nil {
-		return nil, fmt.Errorf("request history table error:  (error was: %s)\n", err.Error())
-	}
-	return table, nil
-}
-
-func generateBars(symbol string, table [][]string) (bars []*Bar) {
-
-	for idx, row := range table {
-		if idx != 0 {
-			bars = append(bars, newBar(symbol, row))
+		isEvent := (row[0] == Dividend || row[0] == Split)
+		if isEvent {
+			mapFields(row, c, &ne)
+			ne.Symbol = symbol
+			e = append(e, ne)
 		}
 	}
-	return bars
-}
 
-func generateEvents(symbol string, table [][]string) (events []*Event) {
-	for _, row := range table {
-		if row[0] == Dividend || row[0] == Split {
-			events = append(events, newEvent(symbol, row))
-		}
-	}
-	return events
+	return
 }

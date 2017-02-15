@@ -25,6 +25,18 @@ func toDecimal(value string) decimal.Decimal {
 	return dec
 }
 
+func toEventValue(value string) Value {
+
+	if strings.Contains(value, ":") {
+		return Value{
+			Ratio: value,
+		}
+	}
+	return Value{
+		Dividend: toDecimal(value),
+	}
+}
+
 // parseDate converts a string to a proper date.
 func parseDate(dString string) time.Time {
 
@@ -51,13 +63,17 @@ func parseDateAndTime(dString string, tString string) time.Time {
 }
 
 // parseDashedDate converts a string to a proper date and sets time to market close.
-func parseDashedDate(dString string) time.Time {
+func parseDashedDate(dString string) (d time.Time, err error) {
 
-	date, err := time.Parse("2006-01-02", dString)
+	d, err = time.Parse("2006-01-02", dString)
 	if err != nil {
-		return time.Time{}
+		dString = parseMalformedDate(dString)
+		d, err = time.Parse("2006-01-02", dString)
+		if err != nil {
+			return time.Time{}, err
+		}
 	}
-	return date.Add(time.Hour * 16)
+	return
 }
 
 func parseMalformedDate(s string) string {

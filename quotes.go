@@ -8,7 +8,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-const quoteURL = "http://download.finance.yahoo.com/d/quotes.csv"
+// QuoteURL
+const QuoteURL = "http://download.finance.yahoo.com/d/quotes.csv"
 
 // Quote is the object that is returned for a quote inquiry.
 type Quote struct {
@@ -55,14 +56,19 @@ type Quote struct {
 // GetQuote fetches a single symbol's quote from Yahoo Finance.
 func GetQuote(symbol string) (q Quote, err error) {
 
+	f, c := structFields(q)
 	params := map[string]string{
 		"s": symbol,
-		"f": constructFields(q),
+		"f": f,
 		"e": ".csv",
 	}
 
-	t, err := fetchCSV(buildURL(quoteURL, params))
-	mapFields(t[0], &q)
+	t, err := fetchCSV(buildURL(QuoteURL, params))
+	if err != nil {
+		return
+	}
+
+	mapFields(t[0], c, &q)
 
 	return
 }
@@ -70,17 +76,22 @@ func GetQuote(symbol string) (q Quote, err error) {
 // GetQuotes fetches multiple symbol's quotes from Yahoo Finance.
 func GetQuotes(symbols []string) (q []Quote, err error) {
 
-	var sq Quote
+	var nq Quote
+	f, c := structFields(nq)
 	params := map[string]string{
 		"s": strings.Join(symbols[:], ","),
-		"f": constructFields(sq),
+		"f": f,
 		"e": ".csv",
 	}
 
-	t, err := fetchCSV(buildURL(quoteURL, params))
+	t, err := fetchCSV(buildURL(QuoteURL, params))
+	if err != nil {
+		return
+	}
+
 	for _, row := range t {
-		mapFields(row, &sq)
-		q = append(q, sq)
+		mapFields(row, c, &nq)
+		q = append(q, nq)
 	}
 
 	return

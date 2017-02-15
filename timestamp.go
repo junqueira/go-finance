@@ -15,12 +15,17 @@ type Timestamp struct {
 	Second int
 }
 
-func newStamp(t string) Timestamp {
-	parsedTime, err := time.Parse("1/2/2006", t)
+// NewStamp creates a new instance of Timestamp.
+func NewStamp(s string) Timestamp {
+
+	parsedTime, err := time.Parse("1/2/2006", s)
 	if err != nil {
-		parsedTime, err = time.Parse("3:04pm", t)
+		parsedTime, err = time.Parse("3:04pm", s)
 		if err != nil {
-			log.Printf("[go-finance] error parsing time: %s", err.Error())
+			parsedTime, err = parseDashedDate(s)
+			if err != nil {
+				log.Printf("[go-finance] error parsing time: %s", err.Error())
+			}
 		}
 	}
 
