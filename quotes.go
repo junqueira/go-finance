@@ -3,6 +3,7 @@
 package finance
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/shopspring/decimal"
@@ -12,11 +13,14 @@ import (
 type Quote struct {
 	Symbol             string          `yfin:"s"`
 	Name               string          `yfin:"n"`
-	LastTradeTime      Datetime       `yfin:"t1"`
-	LastTradeDate      Datetime       `yfin:"d1"`
+	LastTradeTime      Datetime        `yfin:"t1"`
+	LastTradeDate      Datetime        `yfin:"d1"`
 	LastTradePrice     decimal.Decimal `yfin:"l1"`
+	LastTradeSize      int             `yfin:"k3"`
 	Ask                decimal.Decimal `yfin:"a"`
+	AskSize            int             `yfin:"a5"`
 	Bid                decimal.Decimal `yfin:"b"`
+	BidSize            int             `yfin:"b6"`
 	Volume             int             `yfin:"v"`
 	ChangeNominal      decimal.Decimal `yfin:"c1"`
 	ChangePercent      decimal.Decimal `yfin:"p2"`
@@ -42,8 +46,8 @@ type Quote struct {
 	PEGRatio           decimal.Decimal `yfin:"r5"`
 	DivYield           decimal.Decimal `yfin:"y"`
 	DivPerShare        decimal.Decimal `yfin:"d"`
-	DivExDate          Datetime       `yfin:"q"`
-	DivPayDate         Datetime       `yfin:"r1"`
+	DivExDate          Datetime        `yfin:"q"`
+	DivPayDate         Datetime        `yfin:"r1"`
 	EPS                decimal.Decimal `yfin:"e"`
 	EPSEstCurrentYear  decimal.Decimal `yfin:"e7"`
 	EPSEstNextYear     decimal.Decimal `yfin:"e8"`
@@ -84,6 +88,10 @@ func GetQuotes(symbols []string) (q []Quote, err error) {
 	t, err := fetchCSV(buildURL(QuoteURL, params))
 	if err != nil {
 		return
+	}
+
+	if len(t) == 0 {
+		return nil, fmt.Errorf("symbol does not exist")
 	}
 
 	for _, row := range t {
