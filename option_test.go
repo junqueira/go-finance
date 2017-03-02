@@ -45,7 +45,7 @@ func Test_NewContractSlice(t *testing.T) {
 	}
 
 	// When we create a new option contract instance,
-	contracts := newContractSlice(testSlice)
+	contracts := newChain(testSlice)
 
 	// Then slice of contracts length should be equal.
 	assert.Len(t, contracts, len(testSlice))
@@ -73,10 +73,10 @@ func Test_NewOptionContract(t *testing.T) {
 	}
 
 	// When we create a new option contract instance,
-	oc := newOptionContract(testMap)
+	oc := newContract(testMap)
 
 	// Then some fields should equal-
-	assert.Equal(t, "1057390848156240", oc.ContractID)
+	assert.Equal(t, "1057390848156240", oc.ID)
 	assert.Equal(t, "AAPL160415C00055000", oc.Security)
 	assert.Equal(t, 0, oc.Volume)
 	assert.Equal(t, 41, oc.OpenInterest)

@@ -1,64 +1,80 @@
 package finance
 
-import "github.com/shopspring/decimal"
+import (
+	"time"
 
-// OptionChain contains the option contracts for a given symbol and expiration.
-type OptionChain struct {
-	Symbol          string
-	UnderlyingPrice decimal.Decimal
-	Expirations     []*Expiration
-}
+	"github.com/shopspring/decimal"
+)
 
-// Option represents an instance of an option contract.
-type Option struct {
-	ContractID    string
-	Security      string
-	Strike        decimal.Decimal
-	Price         decimal.Decimal
-	ChangeNominal decimal.Decimal
-	ChangePercent decimal.Decimal
-	Bid           decimal.Decimal
-	Ask           decimal.Decimal
-	Volume        int
-	OpenInterest  int
-}
+type (
+	// OptionsCycle contains the list of expirations for a symbol.
+	OptionsCycle struct {
+		Symbol          string
+		UnderlyingPrice decimal.Decimal
+		Expirations     []Datetime
+	}
 
-// newOptionContract creates a new instance of an option.
-func newOptionContract(option map[string]string) *Option {
+	// Contract represents an instance of an option contract.
+	Contract struct {
+		ID            string
+		Security      string
+		Strike        decimal.Decimal
+		Price         decimal.Decimal
+		Change        decimal.Decimal
+		ChangePercent decimal.Decimal
+		Bid           decimal.Decimal
+		Ask           decimal.Decimal
+		Volume        int
+		OpenInterest  int
+	}
+)
 
-	c := &Option{
-		ContractID:    option["cid"],
-		Security:      option["s"],
-		Strike:        toDecimal(option["strike"]),
-		Price:         toDecimal(option["p"]),
-		ChangeNominal: toDecimal(option["c"]),
-		Bid:           toDecimal(option["b"]),
-		Ask:           toDecimal(option["a"]),
-		Volume:        toInt(option["vol"]),
-		OpenInterest:  toInt(option["oi"]),
+// newContract creates a new instance of an option contract.
+func newContract(option map[string]string) Contract {
+
+	c := Contract{
+		ID:           option["cid"],
+		Security:     option["s"],
+		Strike:       toDecimal(option["strike"]),
+		Price:        toDecimal(option["p"]),
+		Change:       toDecimal(option["c"]),
+		Bid:          toDecimal(option["b"]),
+		Ask:          toDecimal(option["a"]),
+		Volume:       toInt(option["vol"]),
+		OpenInterest: toInt(option["oi"]),
 	}
 
 	if c.Price.IntPart() != 0 {
 		hundred, _ := decimal.NewFromString("100")
-		c.ChangePercent = ((c.ChangeNominal).Div(c.Price.Sub(c.ChangeNominal))).Mul(hundred).Truncate(2)
+		c.ChangePercent = ((c.Change).Div(c.Price.Sub(c.Change))).Mul(hundred).Truncate(2)
 	}
 
 	return c
 }
 
-// newContractSlice creates a new slice of contracts.
-func newContractSlice(options []map[string]string) (contracts []*Option) {
+// newCycle fetches the expiration dates for an option cycle.
+func newCycle(symbol string) (expirations []Datetime, price decimal.Decimal, err error) {
 
-	for _, op := range options {
-		contracts = append(contracts, newOptionContract(op))
+	url := buildOptionsURL(OptionsURL, symbol, fromTime(time.Now()))
+	result, err := fetchOptions(url)
+	if err != nil {
+		return expirations, price, err
 	}
+	return result.Expirations, toDecimal(result.Price), err
+}
 
+// newChain creates a new chain of contracts.
+func newChain(options []map[string]string) (contracts []Contract) {
+
+	for _, opt := range options {
+		contracts = append(contracts, newContract(opt))
+	}
 	return contracts
 }
 
-func (chain *OptionChain) expirationExists(e *Expiration) bool {
+func (c *OptionsCycle) expirationExists(e Datetime) bool {
 
-	for _, exp := range chain.Expirations {
+	for _, exp := range c.Expirations {
 		if exp.Day == e.Day && exp.Month == e.Month && exp.Year == e.Year {
 			return true
 		}

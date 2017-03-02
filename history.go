@@ -13,10 +13,7 @@ const (
 	Week = "w"
 	// Month interval.
 	Month = "m"
-	// HistoryURL quote history
-	HistoryURL = "http://ichart.finance.yahoo.com/table.csv"
-	// EventURL event history
-	EventURL = "http://ichart.finance.yahoo.com/x"
+
 	// Dividend constant.
 	Dividend = "DIVIDEND"
 	// Split constant.
@@ -28,7 +25,7 @@ type (
 	Interval string
 	// Bar represents a single bar(candle) in time-series of quotes.
 	Bar struct {
-		Date     Timestamp
+		Date     Datetime
 		Open     decimal.Decimal
 		High     decimal.Decimal
 		Low      decimal.Decimal
@@ -40,7 +37,7 @@ type (
 	// Event contains one historical event (either a split or a dividend).
 	Event struct {
 		EventType string
-		Date      Timestamp
+		Date      Datetime
 		Val       Value
 		Symbol    string `yfin:"-"`
 	}
@@ -52,7 +49,7 @@ type (
 )
 
 // GetHistory fetches a single symbol's quote history from Yahoo Finance.
-func GetHistory(symbol string, start Timestamp, end Timestamp, interval Interval) (b []Bar, err error) {
+func GetHistory(symbol string, start Datetime, end Datetime, interval Interval) (b []Bar, err error) {
 
 	// time range:
 	// start |- | | [bars..] | | -| end
@@ -92,7 +89,7 @@ func GetHistory(symbol string, start Timestamp, end Timestamp, interval Interval
 }
 
 // GetEventHistory fetches a single symbol's dividend and split history from Yahoo Finance.
-func GetEventHistory(symbol string, start Timestamp, end Timestamp) (e []Event, err error) {
+func GetEventHistory(symbol string, start Datetime, end Datetime) (e []Event, err error) {
 
 	params := map[string]string{
 		"s":      symbol,

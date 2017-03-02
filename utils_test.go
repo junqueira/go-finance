@@ -51,59 +51,13 @@ func Test_ToDecimal(t *testing.T) {
 
 }
 
-func Test_ParseDate(t *testing.T) {
-
-	// Given that we have a string of a date.
-	dateString := "4/1/2016"
-	// When we convert it to a proper date,
-	properDate := parseDate(dateString)
-	loc, _ := time.LoadLocation("America/New_York")
-	date := time.Date(2016, 4, 1, 0, 0, 0, 0, loc)
-	// Then it should equal the date April 1, 2016.
-	assert.Equal(t, date.Year(), properDate.Year())
-	assert.Equal(t, date.Month(), properDate.Month())
-	assert.Equal(t, date.Day(), properDate.Day())
-
-	// Given that we have a string of a non-date.
-	nonDateString := "N/A"
-	// When we convert it to a proper date,
-	badDate := parseDate(nonDateString)
-	// Then it should equal the date default.
-	assert.Equal(t, time.Time{}, badDate)
-
-}
-
-func Test_ParseDateAndTime(t *testing.T) {
-
-	// Given that we have a string of a date and time.
-	dateString := "4/1/2016"
-	timeString := "9:30am"
-	// When we convert it to a proper date,
-	properDate := parseDateAndTime(dateString, timeString)
-	loc, _ := time.LoadLocation("America/New_York")
-	date := time.Date(2016, 4, 1, 9, 30, 0, 0, loc)
-	// Then it should equal the date April 1, 2016.
-	assert.Equal(t, date.Year(), properDate.Year())
-	assert.Equal(t, date.Month(), properDate.Month())
-	assert.Equal(t, date.Day(), properDate.Day())
-	assert.Equal(t, date.Hour(), properDate.Hour())
-	assert.Equal(t, date.Minute(), properDate.Minute())
-
-	// Given that we have a string of a non-date and valid time.
-	nonDateString := "N/A"
-	// When we convert it to a proper date,
-	badDate := parseDateAndTime(nonDateString, timeString)
-	// Then it should equal the date default.
-	assert.Equal(t, time.Time{}, badDate)
-
-}
-
 func Test_ParseDashedDate(t *testing.T) {
 
 	// Given that we have a string of a date.
 	dateString := "2016-04-01"
 	// When we convert it to a proper date,
-	properDate := parseDashedDate(dateString)
+	properDate, err := parseDashedDate(dateString)
+	assert.Nil(t, err)
 	loc, _ := time.LoadLocation("America/New_York")
 	date := time.Date(2016, 4, 1, 0, 0, 0, 0, loc)
 	// Then it should equal the date April 1, 2016.
@@ -114,7 +68,9 @@ func Test_ParseDashedDate(t *testing.T) {
 	// Given that we have a string of a non-date.
 	nonDateString := "N/A"
 	// When we convert it to a proper date,
-	badDate := parseDashedDate(nonDateString)
+	badDate, err := parseDashedDate(nonDateString)
+	assert.Nil(t, err)
+
 	// Then it should equal the date default.
 	assert.Equal(t, time.Time{}, badDate)
 

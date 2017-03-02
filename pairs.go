@@ -187,8 +187,8 @@ const (
 type FXPairQuote struct {
 	Symbol           string          `yfin:"s"`
 	PairName         string          `yfin:"n"`
-	LastTradeTime    Timestamp       `yfin:"t1"`
-	LastTradeDate    Timestamp       `yfin:"d1"`
+	LastTradeTime    Datetime       `yfin:"t1"`
+	LastTradeDate    Datetime       `yfin:"d1"`
 	LastRate         decimal.Decimal `yfin:"l1"`
 	ChangeNominal    decimal.Decimal `yfin:"c1"`
 	ChangePercent    decimal.Decimal `yfin:"p2"`

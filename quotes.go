@@ -8,15 +8,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// QuoteURL
-const QuoteURL = "http://download.finance.yahoo.com/d/quotes.csv"
-
 // Quote is the object that is returned for a quote inquiry.
 type Quote struct {
 	Symbol             string          `yfin:"s"`
 	Name               string          `yfin:"n"`
-	LastTradeTime      Timestamp       `yfin:"t1"`
-	LastTradeDate      Timestamp       `yfin:"d1"`
+	LastTradeTime      Datetime       `yfin:"t1"`
+	LastTradeDate      Datetime       `yfin:"d1"`
 	LastTradePrice     decimal.Decimal `yfin:"l1"`
 	Ask                decimal.Decimal `yfin:"a"`
 	Bid                decimal.Decimal `yfin:"b"`
@@ -45,8 +42,8 @@ type Quote struct {
 	PEGRatio           decimal.Decimal `yfin:"r5"`
 	DivYield           decimal.Decimal `yfin:"y"`
 	DivPerShare        decimal.Decimal `yfin:"d"`
-	DivExDate          Timestamp       `yfin:"q"`
-	DivPayDate         Timestamp       `yfin:"r1"`
+	DivExDate          Datetime       `yfin:"q"`
+	DivPayDate         Datetime       `yfin:"r1"`
 	EPS                decimal.Decimal `yfin:"e"`
 	EPSEstCurrentYear  decimal.Decimal `yfin:"e7"`
 	EPSEstNextYear     decimal.Decimal `yfin:"e8"`

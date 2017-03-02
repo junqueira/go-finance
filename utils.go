@@ -37,31 +37,6 @@ func toEventValue(value string) Value {
 	}
 }
 
-// parseDate converts a string to a proper date.
-func parseDate(dString string) time.Time {
-
-	d, err := time.Parse("1/2/2006", dString)
-	if err != nil {
-		return time.Time{}
-	}
-	return d
-}
-
-// parseDateAndTime converts a string to a proper date with a time.
-func parseDateAndTime(dString string, tString string) time.Time {
-
-	d, err := time.Parse("1/2/2006", dString)
-	if err != nil {
-		return time.Time{}
-	}
-	t, err := time.Parse("3:04pm", tString)
-	if err != nil {
-		return time.Time{}
-	}
-	loc, _ := time.LoadLocation("America/New_York")
-	return time.Date(d.Year(), d.Month(), d.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
-}
-
 // parseDashedDate converts a string to a proper date and sets time to market close.
 func parseDashedDate(dString string) (d time.Time, err error) {
 
