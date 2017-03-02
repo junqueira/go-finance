@@ -15,6 +15,5 @@ func GetUSEquitySymbols() (symbols []string, err error) {
 			symbols = append(symbols, r[0])
 		}
 	}
-
 	return
 }

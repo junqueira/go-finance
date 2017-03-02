@@ -15,14 +15,11 @@ func toInt(value string) int {
 }
 
 // toDecimal converts a string to a decimal value.
-func toDecimal(value string) decimal.Decimal {
+func toDecimal(value string) (d decimal.Decimal) {
 
 	value = strings.Replace(value, "%", "", -1)
-	dec, err := decimal.NewFromString(value)
-	if err != nil {
-		return decimal.NewFromFloat(0.0)
-	}
-	return dec
+	d, _ = decimal.NewFromString(value)
+	return
 }
 
 func toEventValue(value string) Value {
@@ -38,12 +35,16 @@ func toEventValue(value string) Value {
 }
 
 // parseDashedDate converts a string to a proper date and sets time to market close.
-func parseDashedDate(dString string) (d time.Time, err error) {
+func parseDashedDate(s string) (d time.Time, err error) {
 
-	d, err = time.Parse("2006-01-02", dString)
+	if !strings.ContainsAny(s, "0123456789") {
+		return
+	}
+
+	d, err = time.Parse("2006-01-02", s)
 	if err != nil {
-		dString = parseMalformedDate(dString)
-		d, err = time.Parse("2006-01-02", dString)
+		s = parseMalformedDate(s)
+		d, err = time.Parse("2006-01-02", s)
 		if err != nil {
 			return time.Time{}, err
 		}
@@ -52,6 +53,10 @@ func parseDashedDate(dString string) (d time.Time, err error) {
 }
 
 func parseMalformedDate(s string) string {
+
+	if len(s) < 7 {
+		return s
+	}
 
 	chars := strings.Split(s, "")
 	chars = chars[1:]

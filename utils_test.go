@@ -10,79 +10,66 @@ import (
 
 func Test_ToInt(t *testing.T) {
 
-	// Given that we have a string of a integer.
-	intString := "34"
-	// When we convert it to a proper int,
-	properInt := toInt(intString)
-	// Then it should equal its integer value.
-	assert.Equal(t, 34, properInt)
-
-	// Given that we have a string of a non-integer.
-	notIntString := "-"
-	// When we convert it to a proper int,
-	zero := toInt(notIntString)
-	// Then it be equal to 0.
-	assert.Equal(t, 0, zero)
-
+	// result should be 34.
+	assert.Equal(t, 34, toInt("34"))
+	// result should be 0.
+	assert.Equal(t, 0, toInt("-"))
 }
 
 func Test_ToDecimal(t *testing.T) {
 
-	// Given that we have a string of a decimal.
-	decString := "34.4"
-	// When we convert it to a proper decimal,
-	properDec := toDecimal(decString)
-	// Then it should equal its decimal value.
-	assert.Equal(t, decimal.NewFromFloat(34.4), properDec)
+	// result should be a decimal of 34.4.
+	assert.Equal(t, decimal.NewFromFloat(34.4), toDecimal("34.4"))
+	// result should be the Decimal zero-value.
+	assert.Equal(t, decimal.Decimal{}, toDecimal("-"))
+	// result should be a decimal of 0.34.
+	assert.Equal(t, decimal.NewFromFloat(0.34), toDecimal("0.34%"))
+}
 
-	// Given that we have a string of a non-decimal.
-	notDecString := "-"
-	// When we convert it to a proper decimal,
-	zeroDec := toDecimal(notDecString)
-	// Then it should equal its decimal value.
-	assert.Equal(t, decimal.NewFromFloat(0.0), zeroDec)
+func Test_ToEventValue(t *testing.T) {
 
-	// Given that we have a string of a decimal percent.
-	percentString := "0.34%"
-	// When we convert it to a proper decimal,
-	percent := toDecimal(percentString)
-	// Then it should equal its decimal value.
-	assert.Equal(t, decimal.NewFromFloat(0.34), percent)
+	// event from split Ratio.
+	split := toEventValue("1:5")
+	// split should have a ratio of 1 to 5.
+	assert.Equal(t, "1:5", split.Ratio)
+	// split should not have a dividend amt.
+	assert.Equal(t, decimal.Decimal{}, split.Dividend)
 
+	// event from dividend value.
+	div := toEventValue("3.02")
+	// dividend should have a dividend amt of 3.02.
+	assert.Equal(t, decimal.NewFromFloat(3.02), div.Dividend)
+	// dividend should not have a split ratio.
+	assert.Equal(t, "", div.Ratio)
 }
 
 func Test_ParseDashedDate(t *testing.T) {
 
-	// Given that we have a string of a date.
-	dateString := "2016-04-01"
-	// When we convert it to a proper date,
-	properDate, err := parseDashedDate(dateString)
+	pd, err := parseDashedDate("2016-04-01")
 	assert.Nil(t, err)
+
 	loc, _ := time.LoadLocation("America/New_York")
-	date := time.Date(2016, 4, 1, 0, 0, 0, 0, loc)
-	// Then it should equal the date April 1, 2016.
-	assert.Equal(t, date.Year(), properDate.Year())
-	assert.Equal(t, date.Month(), properDate.Month())
-	assert.Equal(t, date.Day(), properDate.Day())
+	d := time.Date(2016, 4, 1, 0, 0, 0, 0, loc)
 
-	// Given that we have a string of a non-date.
-	nonDateString := "N/A"
-	// When we convert it to a proper date,
-	badDate, err := parseDashedDate(nonDateString)
+	// result should be April 1, 2016.
+	assert.Equal(t, d.Year(), pd.Year())
+	assert.Equal(t, d.Month(), pd.Month())
+	assert.Equal(t, d.Day(), pd.Day())
+
+	bd, err := parseDashedDate("N/A")
 	assert.Nil(t, err)
 
-	// Then it should equal the date default.
-	assert.Equal(t, time.Time{}, badDate)
+	// result should be the time zero-value.
+	assert.Equal(t, time.Time{}, bd)
 
+	bd, err = parseDashedDate("5434")
+
+	// result should be the time zero-value.
+	assert.Equal(t, time.Time{}, bd)
 }
 
 func Test_ParseMalformedDate(t *testing.T) {
 
-	// Given we have a conjoined date string.
-	badString := "020110506"
-	// When we convert it to a valid date string,
-	validString := parseMalformedDate(badString)
-	// Then it should equal a valid date string.
-	assert.Equal(t, "2011-05-06", validString)
-
+	// result should be a valid date string.
+	assert.Equal(t, "2011-05-06", parseMalformedDate("020110506"))
 }

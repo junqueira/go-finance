@@ -16,7 +16,7 @@ var (
 	secondRegex = regexp.MustCompile(`(\w+):`)
 )
 
-const (
+var (
 	// OptionsURL option chains
 	OptionsURL = "http://www.google.com/finance/option_chain?"
 	// HistoryURL quote history
