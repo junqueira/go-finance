@@ -6,30 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_GetSymbolsFromURL(t *testing.T) {
+func Test_GetUSEquitySymbols(t *testing.T) {
 
-	// Given that we want to download a list of symbols
-	ts := startTestServer("symbols_fixture.csv")
-	defer ts.Close()
+	s := startTestServer("symbols_fixture.csv")
+	defer s.Close()
+	SymbolsURL = s.URL
 
-	// When we request the csv,
-	table, err := getSymbolsFromURL(ts.URL)
+	symbols, err := GetUSEquitySymbols()
 	assert.Nil(t, err)
 
-	// Then the returned table should have a lot of rows-
-	assert.NotEmpty(t, table)
-}
-
-func Test_ProcessSymbols(t *testing.T) {
-
-	// Given that we have a csv of symbols,
-	table := getFixtureAsTable("symbols_fixture.csv")
-
-	// When we parse it,
-	symbols := processSymbols(table)
-
-	// Then the returned slice of symbols should contain-
-	assert.Contains(t, symbols, "AA")
-	assert.Contains(t, symbols, "AAPL")
-
+	// second symbol should be Alcoa.
+	assert.Equal(t, "AA", symbols[1])
+	// slice should contain AMD.
+	assert.Contains(t, symbols, "AMD")
 }

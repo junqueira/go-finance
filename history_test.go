@@ -6,59 +6,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_GetHistoryTable(t *testing.T) {
+func Test_GetHistory(t *testing.T) {
 
-	ts := startTestServer("history_fixture.csv")
-	defer ts.Close()
+	s := startTestServer("history_fixture.csv")
+	defer s.Close()
+	HistoryURL = s.URL
 
-	table, err := getHistoryTable(ts.URL)
+	bars, err := GetHistory("TWTR", Datetime{}, Datetime{}, Day)
 	assert.Nil(t, err)
 
-	// Then the returned table should have a lot of rows-
-	assert.NotEmpty(t, table)
-
+	// result should be a TWTR bar.
+	assert.Equal(t, "TWTR", bars[4].Symbol)
 }
 
-func Test_GenerateBars(t *testing.T) {
+func Test_GetEventHistory(t *testing.T) {
 
-	// Given we have a historical csv.
-	table := getFixtureAsTable("history_fixture.csv")
+	s := startTestServer("events_fixture.csv")
+	defer s.Close()
+	EventURL = s.URL
 
-	// When we generate historical bars,
-	bars := generateBars("AAPL", table)
+	events, err := GetEventHistory("TWTR", Datetime{}, Datetime{})
+	assert.Nil(t, err)
 
-	// Then the returned slice should have a lot of bar pointers-
-	assert.NotEmpty(t, bars)
-
-	first := bars[0]
-	second := bars[1]
-
-	// And the first bar symbol should be AAPL.
-	assert.Equal(t, "AAPL", first.Symbol)
-	// And the second bar symbol should be AAPL.
-	assert.Equal(t, "AAPL", second.Symbol)
-
-	// And the length of bars should be the same as rows minus the header-
-	assert.Equal(t, len(table)-1, len(bars))
-}
-
-func Test_GenerateEvents(t *testing.T) {
-
-	// Given we have a multi-event csv.
-	table := getFixtureAsTable("events_fixture.csv")
-	// When we generate events,
-	events := generateEvents("AAPL", table)
-	// Then the returned slice should have a lot of event pointers-
-	assert.NotEmpty(t, events)
-
-	first := events[0]
-	second := events[1]
-
-	// And the first bar symbol should be AAPL.
-	assert.Equal(t, "AAPL", first.Symbol)
-	// And the second bar symbol should be AAPL.
-	assert.Equal(t, "AAPL", second.Symbol)
-
-	// And the length of events should be the same as rows minus the junk rows-
-	assert.Equal(t, 9, len(events))
+	// result should be a TWTR event.
+	assert.Equal(t, "TWTR", events[4].Symbol)
 }

@@ -10,69 +10,53 @@ import (
 
 // toInt converts a string to an int.
 func toInt(value string) int {
-
 	i, _ := strconv.Atoi(value)
-	// if err != nil {
-	// 	fmt.Println("error converting ", value, " to int: ", err)
-	// }
-
 	return i
 }
 
 // toDecimal converts a string to a decimal value.
-func toDecimal(value string) decimal.Decimal {
+func toDecimal(value string) (d decimal.Decimal) {
 
 	value = strings.Replace(value, "%", "", -1)
-	dec, err := decimal.NewFromString(value)
-	if err != nil {
-		// fmt.Println("error converting ", value, " to decimal value: ", err)
-		return decimal.NewFromFloat(0.0)
-	}
-
-	return dec
+	d, _ = decimal.NewFromString(value)
+	return
 }
 
-// parseDate converts a string to a proper date.
-func parseDate(dString string) time.Time {
+func toEventValue(value string) Value {
 
-	d, err := time.Parse("1/2/2006", dString)
-	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
-		return time.Time{}
+	if strings.Contains(value, ":") {
+		return Value{
+			Ratio: value,
+		}
 	}
-	return d
-}
-
-// parseDateAndTime converts a string to a proper date with a time.
-func parseDateAndTime(dString string, tString string) time.Time {
-
-	d, err := time.Parse("1/2/2006", dString)
-	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
-		return time.Time{}
+	return Value{
+		Dividend: toDecimal(value),
 	}
-	t, err := time.Parse("3:04pm", tString)
-	if err != nil {
-		// fmt.Println("error converting ", tString, " to time: ", err)
-		return time.Time{}
-	}
-	loc, _ := time.LoadLocation("America/New_York")
-
-	return time.Date(d.Year(), d.Month(), d.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
 }
 
 // parseDashedDate converts a string to a proper date and sets time to market close.
-func parseDashedDate(dString string) time.Time {
+func parseDashedDate(s string) (d time.Time, err error) {
 
-	date, err := time.Parse("2006-01-02", dString)
-	if err != nil {
-		// fmt.Println("error converting ", dString, " to date: ", err)
-		return time.Time{}
+	if !strings.ContainsAny(s, "0123456789") {
+		return
 	}
-	return date.Add(time.Hour * 16)
+
+	d, err = time.Parse("2006-01-02", s)
+	if err != nil {
+		s = parseMalformedDate(s)
+		d, err = time.Parse("2006-01-02", s)
+		if err != nil {
+			return time.Time{}, err
+		}
+	}
+	return
 }
 
 func parseMalformedDate(s string) string {
+
+	if len(s) < 7 {
+		return s
+	}
 
 	chars := strings.Split(s, "")
 	chars = chars[1:]
@@ -86,6 +70,5 @@ func insert(s []string, i int, x string) []string {
 	s = append(s, "")
 	copy(s[i+1:], s[i:])
 	s[i] = x
-
 	return s
 }

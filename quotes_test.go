@@ -39,48 +39,60 @@ func getFixtureAsString(filename string) string {
 func startTestServer(fixtureFile string) *httptest.Server {
 
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getFixtureAsString(fixtureFile))
+		if fixtureFile != "" {
+			fmt.Fprintln(w, getFixtureAsString(fixtureFile))
+		} else {
+			fmt.Fprintln(w, "")
+		}
 	}))
 }
 
-func Test_GetQuotesTable(t *testing.T) {
+func Test_GetQuote(t *testing.T) {
 
-	ts := startTestServer("quotes_fixture.csv")
-	defer ts.Close()
+	s := startTestServer("quote_fixture.csv")
+	defer s.Close()
+	QuoteURL = s.URL
 
-	quotes, err := getQuotesTable(ts.URL)
+	q, err := GetQuote("AAPL")
 	assert.Nil(t, err)
 
-	// Then the returned slice of rows should have a length of 2.
-	assert.Len(t, quotes, 2)
+	// result should be a an Apple quote.
+	assert.Equal(t, "AAPL", q.Symbol)
 
-	aapl := quotes[0][0]
-	twtr := quotes[1][0]
+	s = startTestServer("quote_not_fixture.csv")
+	defer s.Close()
+	QuoteURL = s.URL
 
-	// And the first row's symbol should be AAPL.
-	assert.Equal(t, "AAPL", aapl)
-	// And the second row's symbol should be TWTR.
-	assert.Equal(t, "TWTR", twtr)
+	_, err = GetQuote("AAPL")
+	assert.NotNil(t, err)
 
 }
 
-func Test_GenerateQuotes(t *testing.T) {
+func Test_GetQuotes(t *testing.T) {
 
-	// Given we have a multi-quote csv.
-	table := getFixtureAsTable("quotes_fixture.csv")
+	s := startTestServer("quotes_fixture.csv")
+	QuoteURL = s.URL
 
-	// When we generate quotes,
-	quotes := generateQuotes(table)
+	quotes, err := GetQuotes([]string{"AAPL", "TWTR"})
+	assert.Nil(t, err)
 
-	// Then the returned slice of quote pointers should have a length of 2.
-	assert.Len(t, quotes, 2)
+	// result should be a an Apple quote and a Twitter quote.
+	assert.Equal(t, "AAPL", quotes[0].Symbol)
+	assert.Equal(t, "TWTR", quotes[1].Symbol)
+	s.Close()
 
-	aapl := quotes[0]
-	twtr := quotes[1]
+	s = startTestServer("")
+	QuoteURL = s.URL
 
-	// And the first quote symbol should be AAPL.
-	assert.Equal(t, "AAPL", aapl.Symbol)
-	// And the second quote symbol should be TWTR.
-	assert.Equal(t, "TWTR", twtr.Symbol)
+	_, err = GetQuotes([]string{"AAPL", "TWTR"})
+	assert.NotNil(t, err)
+	s.Close()
+
+	s = startTestServer("quote_not_fixture.csv")
+	defer s.Close()
+	QuoteURL = s.URL
+
+	_, err = GetQuotes([]string{"AAPL", "TWTR"})
+	assert.NotNil(t, err)
 
 }
