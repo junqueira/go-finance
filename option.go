@@ -55,7 +55,7 @@ func newContract(option map[string]string) Contract {
 // newCycle fetches the expiration dates for an option cycle.
 func newCycle(symbol string) (expirations []Datetime, price decimal.Decimal, err error) {
 
-	url := buildOptionsURL(OptionsURL, symbol, fromTime(time.Now()))
+	url := buildOptionsURL(OptionsURL, symbol, NewDatetime(time.Now()))
 	result, err := fetchOptions(url)
 	if err != nil {
 		return expirations, price, err

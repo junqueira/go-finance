@@ -25,7 +25,7 @@ func mapFields(vals []string, fc int, v interface{}) {
 		case int:
 			f.Set(reflect.ValueOf(toInt(vals[i])))
 		case Datetime:
-			f.Set(reflect.ValueOf(NewDatetime(vals[i])))
+			f.Set(reflect.ValueOf(ParseDatetime(vals[i])))
 		case decimal.Decimal:
 			f.Set(reflect.ValueOf(toDecimal(vals[i])))
 		case Value:

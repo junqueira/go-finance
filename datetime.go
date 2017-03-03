@@ -15,8 +15,8 @@ type Datetime struct {
 	Second int `json:",omitempty"`
 }
 
-// NewDatetime creates a new instance of Datetime.
-func NewDatetime(s string) Datetime {
+// ParseDatetime creates a new instance of Datetime from a string.
+func ParseDatetime(s string) Datetime {
 
 	t, err := time.Parse("1/2/2006", s)
 	if err != nil {
@@ -28,10 +28,11 @@ func NewDatetime(s string) Datetime {
 			}
 		}
 	}
-	return fromTime(t)
+	return NewDatetime(t)
 }
 
-func fromTime(t time.Time) Datetime {
+// NewDatetime creates a new instance of Datetime.
+func NewDatetime(t time.Time) Datetime {
 
 	// Its just a time.
 	if t.Year() == 0 {
