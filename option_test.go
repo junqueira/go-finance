@@ -10,7 +10,7 @@ func Test_NewContractSlice(t *testing.T) {
 
 	// Given we have a map of option contract data,
 	testSlice := []map[string]string{
-		map[string]string{
+		{
 			"p":      "51.87",
 			"c":      "0.00",
 			"vol":    "-",
@@ -26,7 +26,7 @@ func Test_NewContractSlice(t *testing.T) {
 			"b":      "57.10",
 			"s":      "AAPL160415C00055000",
 		},
-		map[string]string{
+		{
 			"p":      "50.35",
 			"c":      "0.00",
 			"vol":    "-",

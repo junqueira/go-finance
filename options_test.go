@@ -34,12 +34,14 @@ func Test_GetChainForExpiration(t *testing.T) {
 	calls, puts, err := c.GetChainForExpiration(Datetime{})
 
 	// result chain should be empty for datetime zero-value.
+	assert.NotNil(t, err)
 	assert.Empty(t, puts)
 	assert.Empty(t, calls)
 
 	calls, puts, err = c.GetChainForExpiration(c.Expirations[0])
 
 	// result chain should not be empty.
+	assert.Nil(t, err)
 	assert.NotEmpty(t, puts)
 	assert.NotEmpty(t, calls)
 }
@@ -56,6 +58,7 @@ func Test_GetFrontMonth(t *testing.T) {
 	calls, puts, err := c.GetFrontMonth()
 
 	// result chain should not be empty.
+	assert.Nil(t, err)
 	assert.NotEmpty(t, puts)
 	assert.NotEmpty(t, calls)
 }
@@ -72,11 +75,13 @@ func Test_GetCallsForExpiration(t *testing.T) {
 	calls, err := c.GetCallsForExpiration(Datetime{})
 
 	// result calls should be empty for datetime zero-value.
+	assert.NotNil(t, err)
 	assert.Empty(t, calls)
 
 	calls, err = c.GetCallsForExpiration(c.Expirations[0])
 
 	// result calls should not be empty.
+	assert.Nil(t, err)
 	assert.NotEmpty(t, calls)
 }
 
@@ -92,10 +97,12 @@ func Test_GetPutsForExpiration(t *testing.T) {
 	puts, err := c.GetPutsForExpiration(Datetime{})
 
 	// result puts should be empty for datetime zero-value.
+	assert.NotNil(t, err)
 	assert.Empty(t, puts)
 
 	puts, err = c.GetPutsForExpiration(c.Expirations[0])
 
 	// result puts should not be empty.
+	assert.Nil(t, err)
 	assert.NotEmpty(t, puts)
 }

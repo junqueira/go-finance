@@ -65,6 +65,7 @@ func Test_ParseDashedDate(t *testing.T) {
 	bd, err = parseDashedDate("5434")
 
 	// result should be the time zero-value.
+	assert.NotNil(t, err)
 	assert.Equal(t, time.Time{}, bd)
 }
 
